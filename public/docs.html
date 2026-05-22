@@ -8,15 +8,15 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg: #0a0a0f;
-      --surface: rgba(24,24,31,0.6);
-      --surface-hover: rgba(39,39,46,0.8);
-      --border: rgba(139,92,246,0.15);
-      --text: #f0f0f5;
-      --text-muted: #8b8ba3;
-      --accent: #8b5cf6;
-      --accent-glow: rgba(139,92,246,0.3);
+      --bg: #000000;
+      --surface: rgba(17,17,17,0.8);
+      --surface-hover: rgba(26,26,26,0.9);
+      --border: rgba(59,130,246,0.2);
+      --text: #ffffff;
+      --text-muted: #6b7280;
+      --accent: #3b82f6;
       --green: #10b981;
+      --red: #ef4444;
     }
     html { scroll-behavior: smooth; }
     body {
@@ -97,8 +97,8 @@
     th { color: var(--accent); font-weight: 500; }
     td { color: var(--text-muted); }
     .tip {
-      background: rgba(139,92,246,0.08);
-      border: 1px solid rgba(139,92,246,0.2);
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.25);
       border-radius: 8px;
       padding: 16px 20px;
       margin: 16px 0;
@@ -132,7 +132,7 @@
 </head>
 <body>
   <nav class="sidebar">
-    <a href="index.html" class="logo">Oktomatzo<span>Host</span></a>
+    <a href="/" class="logo">Oktomatzo<span>Host</span></a>
     <div class="section">
       <div class="section-title">Getting Started</div>
       <a href="#overview">Overview</a>
@@ -172,35 +172,34 @@
   </nav>
 
   <main class="content">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <a href="/" class="back-link">&larr; Back to Home</a>
     <h1>Oktomatzo <span class="accent">Host</span> Documentation</h1>
     <p style="font-size: 1.1rem;">A full-stack platform for hosting interactive projects — 3D visualizers, AI tools, minigames, and more.</p>
 
     <!-- OVERVIEW -->
     <h2 id="overview">Overview</h2>
     <p>Oktomatzo Host is a <strong>registry-based project platform</strong>. Each "project" is a standalone page that lives in its own file. Adding a new project means creating a page and registering it — no routing or config changes needed.</p>
-    <p>The platform has two parts that run simultaneously:</p>
+    <p>The platform has two parts. In production, they run as a <strong>single process</strong> on Render:</p>
     <ul>
-      <li><strong>Frontend</strong> (Astro + TypeScript) — serves pages, static assets, and client-side JavaScript. Runs on port 4321.</li>
-      <li><strong>Backend</strong> (Python FastAPI) — handles authentication, data persistence, and heavy processing (AI, etc.). Runs on port 8000.</li>
+      <li><strong>Frontend</strong> (Astro + TypeScript) — built to static files in <code>dist/</code></li>
+      <li><strong>Backend</strong> (Python FastAPI) — serves the API AND the frontend static files from one server</li>
     </ul>
+    <p>In development, they run separately on different ports with <code>concurrently</code>.</p>
 
     <!-- ARCHITECTURE -->
     <h2 id="architecture">Architecture</h2>
     <pre><code>User's Browser
-      │
-      ├── http://localhost:4321  ──►  Astro Frontend (static pages)
-      │                                │
-      │                                ├── /css/style.css
-      │                                ├── /js/projects/*.js
-      │                                └── /projects/3d-viz/  (Three.js)
-      │
-      └── fetch('http://localhost:8000/api/...')  ──►  Python Backend
-                                                       │
-                                                       ├── /api/auth/*     (JWT + bcrypt)
-                                                       ├── /api/health     (health check)
-                                                       ├── /api/generate   (AI placeholder)
-                                                       └── database.db     (SQLite)</code></pre>
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  FastAPI (Python) — ONE server           │
+│                                         │
+│  ├── /api/*  →  Python code (auth, AI)  │
+│  │                                        │
+│  └── /*      →  Astro static files       │
+│                 (HTML, CSS, JS, images)   │
+│                 served from dist/ folder  │
+└─────────────────────────────────────────┘</code></pre>
 
     <!-- SETUP -->
     <h2 id="setup">Setup &amp; Run</h2>
@@ -210,17 +209,24 @@
       <li><strong>pnpm</strong> — <code>npm install -g pnpm</code></li>
       <li><strong>Python</strong> (3.10+) — <code>python --version</code></li>
     </ul>
-    <h3>One-Command Start</h3>
-    <pre><code>pnpm run dev:all</code></pre>
-    <p>This starts both servers. Open <code>http://localhost:4321</code> in your browser.</p>
-    <h3>Separate Terminals</h3>
-    <pre><code># Terminal 1: Frontend
+    <h3>Development (local)</h3>
+    <pre><code># One command starts both:
+pnpm run dev:all
+
+# Or separately:
+# Terminal 1:
 pnpm dev
 
-# Terminal 2: Backend
+# Terminal 2:
 cd backend
 .venv\Scripts\activate
-uvicorn app.main:app --reload --port 8000</code></pre>
+uvicorn app.main:app --reload --port 8001
+
+# For production preview:
+pnpm build
+cd backend
+.venv\Scripts\activate
+uvicorn app.main:app --reload --port 8001</code></pre>
 
     <!-- ADDING A PROJECT -->
     <h2 id="add-project-overview">Adding a New Project — Step by Step</h2>
@@ -430,10 +436,13 @@ const result = await generateImage('a purple torus knot')</code></pre>
     <h2 id="frontend-styles">Styling</h2>
     <p>All styles live in <code>public/css/style.css</code>. The theme uses CSS custom properties:</p>
     <pre><code>:root {
-  --bg-base: #0a0a0f;
-  --text-primary: #f0f0f5;
-  --text-accent: #8b5cf6;
-  --border: rgba(139, 92, 246, 0.15);
+  --bg-base: #000000;
+  --bg-surface: rgba(17,17,17,0.8);
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent: #3b82f6;
+  --border: #262626;
   --space-lg: 24px;
   --header-height: 64px;
 }</code></pre>
@@ -473,20 +482,29 @@ const result = await generateImage('a purple torus knot')</code></pre>
     <div class="tip">The SECRET_KEY in <code>.env</code> defaults to a placeholder. <strong>Change it</strong> to a random string before deploying to production. Generate one with: <code>python -c "import secrets; print(secrets.token_hex(32))"</code></div>
 
     <!-- DEPLOYMENT -->
-    <h2 id="deployment">Deployment Notes</h2>
-    <p><strong>Frontend (Astro):</strong></p>
-    <pre><code>pnpm build     # Output goes to dist/
-# Deploy dist/ to any static host: Vercel, Netlify, GitHub Pages, Cloudflare Pages</code></pre>
-    <p><strong>Backend (Python):</strong></p>
-    <pre><code># Option A: Direct with uvicorn
-cd backend
-.venv\Scripts\activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+    <h2 id="deployment">Deployment (Render — Single Service)</h2>
+    <p>Oktomatzo Host deploys as <strong>one Render Web Service</strong> that runs both frontend and backend.</p>
 
-# Option B: Docker
-docker build -t oktomatzo-backend .
-docker run -p 8000:8000 oktomatzo-backend</code></pre>
-    <p><strong>CORS:</strong> Update <code>CORS_ORIGINS</code> in <code>backend/.env</code> to include your deployed frontend URL.</p>
+    <h3>How It Works</h3>
+    <ol>
+      <li><code>pnpm build</code> generates <code>dist/</code> folder (static HTML/CSS/JS from Astro)</li>
+      <li>FastAPI's <code>StaticFiles</code> mount serves <code>dist/</code> at the root path</li>
+      <li>API routes (<code>/api/*</code>) are registered first and take priority</li>
+      <li>Everything runs on one domain — no CORS needed</li>
+    </ol>
+
+    <h3>Render Configuration</h3>
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Type</td><td>Web Service</td></tr>
+        <tr><td>Build Command</td><td><code>pnpm build && pip install -r backend/requirements.txt</code></td></tr>
+        <tr><td>Start Command</td><td><code>cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT</code></td></tr>
+        <tr><td>Env: SECRET_KEY</td><td>Run <code>python -c "import secrets; print(secrets.token_hex(32))"</code> and paste</td></tr>
+      </tbody>
+    </table>
 
     <!-- TROUBLESHOOTING -->
     <h2 id="troubleshooting">Troubleshooting</h2>
@@ -497,10 +515,10 @@ docker run -p 8000:8000 oktomatzo-backend</code></pre>
       <tbody>
         <tr><td><code>pnpm: command not found</code></td><td>pnpm not installed</td><td><code>npm install -g pnpm</code></td></tr>
         <tr><td><code>Scripts disabled on this system</code></td><td>PowerShell execution policy</td><td>Use <code>cmd /c "pnpm dev"</code> or run <code>Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</code></td></tr>
-        <tr><td><code>Backend unavailable</code></td><td>Backend not running</td><td>Start with <code>uvicorn app.main:app --reload --port 8000</code></td></tr>
+        <tr><td><code>Backend unavailable</code></td><td>Backend not running</td><td>Start with <code>uvicorn app.main:app --reload --port 8001</code></td></tr>
         <tr><td><code>401 Unauthorized</code></td><td>Missing or expired token</td><td>Log in again via <code>/api/auth/login</code></td></tr>
         <tr><td><code>CORS error in browser</code></td><td>Frontend origin not whitelisted</td><td>Add the URL to <code>CORS_ORIGINS</code> in <code>backend/.env</code></td></tr>
-        <tr><td><code>Port already in use</code></td><td>Another process using 4321 or 8000</td><td>Change port in <code>backend/.env</code> or <code>package.json</code></td></tr>
+        <tr><td><code>Port already in use</code></td><td>Another process using 4321 or 8001</td><td>Change port in <code>backend/.env</code> or <code>package.json</code></td></tr>
         <tr><td>3D scene not loading</td><td>Import map or CDN issue</td><td>Check internet connection. Verify CDN URL in the import map script.</td></tr>
       </tbody>
     </table>

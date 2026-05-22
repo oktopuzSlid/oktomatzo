@@ -1,4 +1,7 @@
-const API_BASE = 'http://localhost:8001'
+// API_BASE: empty string = same origin (works in dev + production)
+// In development, the Astro dev server proxies /api/* to port 8001
+// In production (Render), Python serves both frontend and /api/*
+const API_BASE = ''
 
 export interface HealthResponse {
   status: string
