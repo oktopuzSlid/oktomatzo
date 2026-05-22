@@ -1,0 +1,31 @@
+---
+import type { ProjectDefinition } from '../lib/projects'
+
+export type Props = ProjectDefinition
+
+const { title, description, category, href, icon } = Astro.props as Props
+---
+
+<article class="project-card">
+  <div class="card-icon">
+    {icon === 'smile' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+        <line x1="9" y1="9" x2="9.01" y2="9" />
+        <line x1="15" y1="9" x2="15.01" y2="9" />
+      </svg>
+    )}
+    {icon === 'cube' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+        <path d="M2 17l10 5 10-5" />
+        <path d="M2 12l10 5 10-5" />
+      </svg>
+    )}
+  </div>
+  <h2 class="card-title">{title}</h2>
+  <p class="card-description">{description}</p>
+  <span class="card-category">{category}</span>
+  <a href={href} class="card-link">Open &rarr;</a>
+</article>

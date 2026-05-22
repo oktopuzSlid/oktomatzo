@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro'
+---
+
+<Base title="3D Visualizer | Oktomatzo Host" description="Interactive 3D scene with Three.js">
+  <section class="page-section">
+    <div class="container">
+      <a href="/projects/" class="back-link">&larr; Back to Projects</a>
+      <h1 class="page-title">3D Visualizer</h1>
+      <p class="page-description">Interactive geometric scene &mdash; drag to orbit, scroll to zoom, click to recolor.</p>
+
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <button id="toggle-wireframe" class="btn btn-outline">Toggle Wireframe</button>
+        <button id="toggle-rotation" class="btn btn-outline">Pause Rotation</button>
+      </div>
+
+      <div id="three-container" style="width: 100%; height: 500px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139, 92, 246, 0.1);"></div>
+    </div>
+  </section>
+</Base>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/"
+  }
+}
+</script>
+<script src="/js/projects/three-d-viz.js" type="module" defer></script>

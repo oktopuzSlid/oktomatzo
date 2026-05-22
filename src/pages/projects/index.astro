@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro'
+import ProjectCard from '../../components/ProjectCard.astro'
+import { projects } from '../../lib/projects'
+---
+
+<Base title="Projects | Oktomatzo Host" description="Browse all interactive projects">
+  <section class="page-section">
+    <div class="container">
+      <h1 class="page-title">Projects</h1>
+      <p class="page-description">Select a project to launch it.</p>
+      <div class="project-grid">
+        {projects.map(project => (
+          <ProjectCard {...project} />
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

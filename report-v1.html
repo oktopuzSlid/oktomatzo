@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v1.0 Report — Oktomatzo Host</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: rgba(24,24,31,0.6);
+      --border: rgba(139,92,246,0.15);
+      --text: #f0f0f5;
+      --text-muted: #8b8ba3;
+      --accent: #8b5cf6;
+      --accent-glow: rgba(139,92,246,0.3);
+      --green: #10b981;
+      --red: #ef4444;
+    }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+    h1 { font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+    h2 { font-size: 1.5rem; margin-top: 48px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.125rem; margin-top: 24px; color: var(--accent); }
+    .version-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      padding: 4px 16px;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+    .subtitle { color: var(--text-muted); margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+    th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    th { color: var(--accent); font-weight: 500; }
+    td { font-size: 0.9rem; }
+    .tag { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; }
+    .tag-new { background: rgba(16,185,129,0.15); color: var(--green); }
+    .tag-upgrade { background: rgba(139,92,246,0.15); color: var(--accent); }
+    .tech-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; }
+    .tech-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tech-name { font-weight: 500; }
+    .tech-version { color: var(--text-muted); font-size: 0.8rem; }
+    nav {
+      position: sticky; top: 0;
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      gap: 24px;
+      z-index: 100;
+    }
+    nav a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+    nav a:hover { color: var(--accent); }
+    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+    .comparison-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .comparison-box h3 { margin-top: 0; }
+    .comparison-box ul { list-style: none; margin-top: 12px; }
+    .comparison-box li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+    .comparison-box li:last-child { border-bottom: none; }
+    .badge-before { color: var(--red); font-size: 0.75rem; font-weight: 500; }
+    .badge-after { color: var(--green); font-size: 0.75rem; font-weight: 500; }
+    .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; }
+    .back-link:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="about.html">About</a>
+    <a href="docs.html" style="color: var(--accent);">Docs</a>
+    <a href="report-v1.html">v1.0 Report</a>
+  </nav>
+  <div class="container">
+    <a href="docs.html" class="back-link">&larr; Back to Docs</a>
+    <h1>Version 1.0 Release Report</h1>
+    <span class="version-badge">v0.3 &rarr; v1.0</span>
+    <p class="subtitle">Comprehensive comparison of architecture, technologies, and capabilities before and after the backend integration.</p>
+
+    <h2>Before vs After</h2>
+    <div class="comparison-grid">
+      <div class="comparison-box">
+        <h3>Before (v0.3)</h3>
+        <span class="badge-before">Static frontend only</span>
+        <ul>
+          <li>Astro + TypeScript frontend</li>
+          <li>Static HTML pages, no backend</li>
+          <li>No user authentication</li>
+          <li>No data persistence</li>
+          <li>Import map for Three.js CDN</li>
+          <li>All projects client-side only</li>
+          <li>No API endpoints</li>
+          <li>No rate limiting</li>
+          <li>No input validation</li>
+          <li>Single dev command (pnpm dev)</li>
+        </ul>
+      </div>
+      <div class="comparison-box">
+        <h3>After (v1.0)</h3>
+        <span class="badge-after">Full-stack architecture</span>
+        <ul>
+          <li>Astro + TypeScript frontend</li>
+          <li>Python FastAPI backend</li>
+          <li>User signup / login with JWT</li>
+          <li>SQLite database persistence</li>
+          <li>Import map for Three.js CDN</li>
+          <li>Projects can call backend APIs</li>
+          <li>6 REST API endpoints</li>
+          <li>Rate limiting on all endpoints</li>
+          <li>Pydantic input validation</li>
+          <li>Single command: pnpm run dev:all</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>New Technologies Added</h2>
+    <div class="tech-list">
+      <div class="tech-item"><span class="tech-name">FastAPI</span><span class="tech-version">0.115</span></div>
+      <div class="tech-item"><span class="tech-name">Uvicorn</span><span class="tech-version">0.30</span></div>
+      <div class="tech-item"><span class="tech-name">SQLite</span><span class="tech-version">(built-in)</span></div>
+      <div class="tech-item"><span class="tech-name">passlib + bcrypt</span><span class="tech-version">1.7.4</span></div>
+      <div class="tech-item"><span class="tech-name">python-jose (JWT)</span><span class="tech-version">3.3</span></div>
+      <div class="tech-item"><span class="tech-name">slowapi</span><span class="tech-version">0.1.9</span></div>
+      <div class="tech-item"><span class="tech-name">Pydantic v2</span><span class="tech-version">2.13</span></div>
+      <div class="tech-item"><span class="tech-name">python-dotenv</span><span class="tech-version">1.0</span></div>
+      <div class="tech-item"><span class="tech-name">concurrently</span><span class="tech-version">9.2</span></div>
+      <div class="tech-item"><span class="tech-name">Pillow</span><span class="tech-version">11.0</span></div>
+    </div>
+
+    <h2>Architecture Change</h2>
+    <pre style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 16px; font-size: 0.8rem; line-height: 1.5; overflow-x: auto;"><span style="color: var(--red);">BEFORE (v0.3)</span>
+oktomatzo/
+├── src/          ← Astro frontend
+├── public/       ← Static files
+└── package.json  ← pnpm only
+
+<span style="color: var(--green);">AFTER (v1.0)</span>
+oktomatzo/
+├── src/          ← Astro frontend + lib/api.ts
+├── public/       ← Static files
+├── backend/      ← NEW: Python FastAPI
+│   ├── app/
+│   │   ├── main.py        ← Server + CORS
+│   │   ├── database.py    ← SQLite
+│   │   ├── auth.py        ← JWT + bcrypt
+│   │   ├── routers/
+│   │   │   ├── auth.py    ← signup/login/me
+│   │   │   └── projects.py ← health/generate
+│   │   └── schemas/
+│   │       ├── auth.py    ← Auth models
+│   │       └── models.py  ← API models
+│   ├── storage/           ← File uploads
+│   ├── .env               ← Config
+│   └── requirements.txt
+├── src/lib/api.ts ← NEW: API client
+└── package.json   ← + concurrently</pre>
+
+    <h2>API Endpoints Summary</h2>
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Rate Limit</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GET</td><td>/api/health</td><td>No</td><td>30/min</td><td>Health check</td></tr>
+        <tr><td>POST</td><td>/api/auth/signup</td><td>No</td><td>10/min</td><td>Create account</td></tr>
+        <tr><td>POST</td><td>/api/auth/login</td><td>No</td><td>10/min</td><td>Log in</td></tr>
+        <tr><td>GET</td><td>/api/auth/me</td><td>JWT</td><td>30/min</td><td>Get profile</td></tr>
+        <tr><td>POST</td><td>/api/generate</td><td>JWT</td><td>10/min</td><td>Generate (placeholder)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Security Improvements</h2>
+    <table>
+      <thead>
+        <tr><th>Area</th><th>Before</th><th>After</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Password storage</td><td>None (no users)</td><td>bcrypt hashing</td></tr>
+        <tr><td>Authentication</td><td>None</td><td>JWT tokens (1hr expiry)</td></tr>
+        <tr><td>Input validation</td><td>None</td><td>Pydantic: length limits, email format, password strength</td></tr>
+        <tr><td>Rate limiting</td><td>None</td><td>10-30 req/min per endpoint</td></tr>
+        <tr><td>SQL injection</td><td>No SQL</td><td>Parameterized queries</td></tr>
+        <tr><td>CORS</td><td>None</td><td>Whitelist via .env</td></tr>
+        <tr><td>Directory traversal</td><td>No file ops</td><td>File paths restricted to storage/</td></tr>
+      </tbody>
+    </table>
+
+    <h2>How to Run v1.0</h2>
+    <pre style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 16px; font-size: 0.8rem; line-height: 1.5; overflow-x: auto;"># Terminal 1 (one command):
+pnpm run dev:all
+
+# Or two terminals:
+# Terminal 1: Frontend
+pnpm dev
+
+# Terminal 2: Backend
+cd backend
+.venv\Scripts\activate
+uvicorn app.main:app --reload --port 8000</pre>
+
+    <h2>Database Schema</h2>
+    <pre style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 16px; font-size: 0.8rem; line-height: 1.5; overflow-x: auto;">users
+├── id              INTEGER PRIMARY KEY
+├── name            TEXT NOT NULL
+├── email           TEXT UNIQUE NOT NULL
+├── password_hash   TEXT NOT NULL (bcrypt)
+└── created_at      TIMESTAMP
+
+projects
+├── id              INTEGER PRIMARY KEY
+├── slug            TEXT UNIQUE NOT NULL
+├── title           TEXT NOT NULL
+├── data            TEXT (JSON or prompt)
+├── user_email      TEXT FK -> users.email
+└── created_at      TIMESTAMP</pre>
+  </div>
+</body>
+</html>
