@@ -5,27 +5,22 @@ import { projects } from '../../lib/projects'
 ---
 
 <Base title="Projects | Oktomatzo Host" description="Browse all interactive projects">
-  <section class="page-section">
-    <div class="container">
-      <div class="page-header">
+  <section class="page-section projects-page">
+    <div class="container project-browser">
+      <div class="page-header" style="margin-bottom: var(--space-md);">
         <h1 class="page-title">Projects</h1>
-        <p class="page-description">Select a project to explore.</p>
       </div>
 
-      <div class="project-browser">
-        <div id="preview-area" class="preview-area">
-          <div id="preview-content" class="preview-content">
-            <span class="preview-placeholder-text">Choose a project below</span>
-          </div>
-        </div>
+      <div class="project-viewer">
+        <iframe id="project-frame" src={projects[0].href} title="Project viewer"></iframe>
+      </div>
 
-        <div class="carousel-strip">
-          <ul class="carousel-track" id="carousel-track">
-            {projects.map(project => (
-              <ProjectCarouselCard {...project} />
-            ))}
-          </ul>
-        </div>
+      <div class="carousel-strip">
+        <ul class="carousel-track" id="carousel-track">
+          {projects.map(project => (
+            <ProjectCarouselCard {...project} />
+          ))}
+        </ul>
       </div>
     </div>
   </section>

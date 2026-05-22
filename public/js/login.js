@@ -84,7 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
       const data = await res.json()
 
       if (!res.ok) {
-        showMessage(data.detail || 'Something went wrong', true)
+        var errMsg = 'Something went wrong'
+        if (Array.isArray(data.detail)) {
+          errMsg = data.detail.map(function (e) { return e.msg || e.message || JSON.stringify(e) }).join(', ')
+        } else if (typeof data.detail === 'string') {
+          errMsg = data.detail
+        } else if (data.message) {
+          errMsg = data.message
+        }
+        showMessage(errMsg, true)
         submitBtn.disabled = false
         submitBtn.textContent = mode === 'login' ? 'Log In' : 'Sign Up'
         return

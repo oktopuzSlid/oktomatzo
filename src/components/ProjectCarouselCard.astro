@@ -3,12 +3,13 @@ export interface Props {
   slug: string
   icon: string
   description: string
+  href: string
 }
 
-const { slug, icon, description } = Astro.props as Props
+const { slug, icon, description, href } = Astro.props as Props
 ---
 
-<li class="carousel-card" data-slug={slug} data-description={description}>
+<li class="carousel-card" data-slug={slug} data-description={description} data-href={href}>
   <div class="carousel-card-icon">
     {icon === 'smile' && (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
@@ -28,5 +29,5 @@ const { slug, icon, description } = Astro.props as Props
   </div>
   <div class="carousel-card-title">{Astro.props.title}</div>
   <div class="carousel-card-category">{Astro.props.category}</div>
-  <div class="carousel-card-arrow">Open &rarr;</div>
+  <div class="carousel-card-arrow">Open</div>
 </li>
