@@ -1,0 +1,21 @@
+---
+// Embed — no layout, just 3D canvas for iframe
+---
+
+<section>
+  <div style="display:flex; gap:8px; padding:12px;">
+    <button id="toggle-wireframe" class="btn btn-outline" style="padding:8px 16px; font-size:0.8rem;">Wireframe</button>
+    <button id="toggle-rotation" class="btn btn-outline" style="padding:8px 16px; font-size:0.8rem;">Pause</button>
+  </div>
+  <div id="three-container" style="width:100%; height:calc(100vh - 60px); border:none;"></div>
+</section>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/"
+  }
+}
+</script>
+<script src="/js/projects/three-d-viz.js" type="module" defer></script>
