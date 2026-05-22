@@ -1,4 +1,4 @@
-const API = 'http://localhost:8001'
+const API = ''
 
 document.addEventListener('DOMContentLoaded', function () {
   const tabLogin = document.getElementById('tab-login')
@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function showTab(m) {
     mode = m
-    tabLogin.style.background = m === 'login' ? 'rgba(139,92,246,0.1)' : 'transparent'
-    tabLogin.style.color = m === 'login' ? 'var(--accent, #8b5cf6)' : 'var(--text-muted, #8b8ba3)'
-    tabSignup.style.background = m === 'signup' ? 'rgba(139,92,246,0.1)' : 'transparent'
-    tabSignup.style.color = m === 'signup' ? 'var(--accent, #8b5cf6)' : 'var(--text-muted, #8b8ba3)'
+    tabLogin.style.background = m === 'login' ? 'rgba(59,130,246,0.1)' : 'transparent'
+    tabLogin.style.color = m === 'login' ? 'var(--accent)' : 'var(--text-muted)'
+    tabSignup.style.background = m === 'signup' ? 'rgba(59,130,246,0.1)' : 'transparent'
+    tabSignup.style.color = m === 'signup' ? 'var(--accent)' : 'var(--text-muted)'
     nameField.style.display = m === 'signup' ? 'flex' : 'none'
     submitBtn.textContent = m === 'login' ? 'Log In' : 'Sign Up'
     authMessage.style.display = 'none'
@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   tabLogin.addEventListener('click', function () { showTab('login') })
   tabSignup.addEventListener('click', function () { showTab('signup') })
+
+  emailInput.addEventListener('input', function () { this.style.borderColor = ''; authMessage.style.display = 'none' })
+  passwordInput.addEventListener('input', function () { this.style.borderColor = ''; authMessage.style.display = 'none' })
+  if (nameInput) nameInput.addEventListener('input', function () { this.style.borderColor = '' })
 
   function showMessage(text, isError) {
     authMessage.textContent = text
@@ -96,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displayName.textContent = data.user_name
       }, 500)
     } catch (err) {
-      showMessage('Cannot reach server. Is the backend running?', true)
+      showMessage('Network error — server may be waking up. Try again in a moment.', true)
     }
 
     submitBtn.disabled = false
