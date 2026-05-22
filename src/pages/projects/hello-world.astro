@@ -1,16 +1,22 @@
 ---
 import Base from '../../layouts/Base.astro'
+import ProjectNav from '../../components/ProjectNav.astro'
 ---
 
 <Base title="Hello World | Oktomatzo Host" description="Hello World demo project">
-  <section class="page-section">
+  <section class="page-section" style="padding-bottom: 0;">
     <div class="container">
-      <a href="/projects/" class="back-link">&larr; Back to Projects</a>
-      <h1 class="page-title">Hello World</h1>
-      <p class="page-description">This project proves the page structure works.</p>
       <div id="project-root" class="project-root"></div>
     </div>
   </section>
+
+  <ProjectNav currentSlug="hello-world" />
+
+  <footer class="site-footer" style="border-top: none;">
+    <div class="container">
+      <p>&copy; 2026 Oktomatzo Host</p>
+    </div>
+  </footer>
 </Base>
 
 <script src="/js/projects/hello-world.js" defer></script>

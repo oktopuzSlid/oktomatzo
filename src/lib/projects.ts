@@ -8,7 +8,6 @@ export const projects: ProjectDefinition[] = [
     category: 'threejs',
     icon: 'cube',
     href: '/projects/3d-viz/',
-    embedHref: '/embed/3d-viz/',
   },
   {
     slug: 'hello-world',
@@ -17,6 +16,5 @@ export const projects: ProjectDefinition[] = [
     category: 'interactive',
     icon: 'smile',
     href: '/projects/hello-world/',
-    embedHref: '/embed/hello-world/',
   },
 ]

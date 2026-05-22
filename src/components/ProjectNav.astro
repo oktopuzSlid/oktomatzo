@@ -1,0 +1,45 @@
+---
+// Project navigation strip — shows small cards at the bottom of project pages
+// Click a card to navigate to that project.
+import { projects } from '../lib/projects'
+
+export interface Props {
+  currentSlug: string
+}
+
+const { currentSlug } = Astro.props
+---
+
+<nav class="project-nav" aria-label="Project navigation">
+  <div class="container">
+    <ul class="project-nav-track">
+      {projects.map((p) => (
+        <li>
+          <a
+            href={p.href}
+            class={"project-nav-card" + (p.slug === currentSlug ? " active" : "")}
+          >
+            <div class="project-nav-icon">
+              {p.icon === 'cube' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              )}
+              {p.icon === 'smile' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                  <line x1="9" y1="9" x2="9.01" y2="9" />
+                  <line x1="15" y1="9" x2="15.01" y2="9" />
+                </svg>
+              )}
+            </div>
+            <span class="project-nav-title">{p.title}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
