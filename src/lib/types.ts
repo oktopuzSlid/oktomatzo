@@ -7,4 +7,5 @@ export interface ProjectDefinition {
   category: ProjectCategory
   icon: string
   href: string
+  embedHref: string
 }

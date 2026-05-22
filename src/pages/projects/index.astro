@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro'
-import ProjectCarouselCard from '../../components/ProjectCarouselCard.astro'
 import { projects } from '../../lib/projects'
 ---
 
@@ -8,17 +7,39 @@ import { projects } from '../../lib/projects'
   <section class="page-section projects-page">
     <div class="container project-browser">
       <div class="page-header" style="margin-bottom: var(--space-md);">
-        <h1 class="page-title">Projects</h1>
+        <h1 class="page-title" id="carousel-title">Projects</h1>
       </div>
 
-      <div class="project-viewer">
-        <iframe id="project-frame" src={projects[0].href} title="Project viewer"></iframe>
+      <div class="project-viewer" id="project-viewer">
+        <button id="arrow-prev" class="carousel-arrow carousel-arrow-prev" aria-label="Previous project">&#8249;</button>
+        <button id="arrow-next" class="carousel-arrow carousel-arrow-next" aria-label="Next project">&#8250;</button>
+        <iframe id="project-frame" src={projects[0].embedHref} title="Project viewer"></iframe>
       </div>
 
-      <div class="carousel-strip">
+      <div class="carousel-strip" id="carousel-strip">
         <ul class="carousel-track" id="carousel-track">
-          {projects.map(project => (
-            <ProjectCarouselCard {...project} />
+          {projects.map((project, i) => (
+            <li class="carousel-card" data-slug={project.slug} data-embed={project.embedHref} data-href={project.href} data-index={i}>
+              <div class="carousel-card-icon">
+                {project.icon === 'cube' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
+                )}
+                {project.icon === 'smile' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                    <line x1="9" y1="9" x2="9.01" y2="9" />
+                    <line x1="15" y1="9" x2="15.01" y2="9" />
+                  </svg>
+                )}
+              </div>
+              <div class="carousel-card-title">{project.title}</div>
+              <div class="carousel-card-category">{project.category}</div>
+            </li>
           ))}
         </ul>
       </div>

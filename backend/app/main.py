@@ -1,9 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 from .routers import projects, auth
 from .database import init_db
 import os
@@ -11,11 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-limiter = Limiter(key_func=get_remote_address)
-
 app = FastAPI(title="Oktomatzo Host", version="1.0.0")
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:4321,http://localhost:8001").split(",")
 app.add_middleware(
@@ -36,5 +29,9 @@ if os.path.isdir(DIST_DIR):
 
 @app.on_event("startup")
 def startup():
-    init_db()
-    os.makedirs(os.getenv("STORAGE_PATH", "./storage"), exist_ok=True)
+    try:
+        init_db()
+        os.makedirs(os.getenv("STORAGE_PATH", "./storage"), exist_ok=True)
+        print("Startup complete")
+    except Exception as e:
+        print("Startup error:", e)
