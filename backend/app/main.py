@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from .routers import projects, auth
+from .routers import projects, auth, admin
 from .database import init_db
 import os
 from dotenv import load_dotenv
@@ -21,6 +21,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(projects.router)
+app.include_router(admin.router)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 DIST_DIR = os.path.join(BASE_DIR, 'dist')
