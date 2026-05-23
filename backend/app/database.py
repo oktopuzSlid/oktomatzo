@@ -1,8 +1,28 @@
 import os
+import socket
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from urllib.parse import urlparse
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+raw_url = os.getenv("DATABASE_URL", "")
+
+# Resolve hostname to IPv4 to avoid Render-to-Supabase IPv6 routing issues
+def resolve_ipv4(url: str) -> str:
+    if not url:
+        return url
+    try:
+        parsed = urlparse(url)
+        host = parsed.hostname
+        if not host:
+            return url
+        # Get IPv4 address for the host
+        ipv4 = socket.getaddrinfo(host, None, socket.AF_INET)[0][4][0]
+        url = url.replace(host, ipv4)
+    except Exception:
+        pass  # fall back to original URL if resolution fails
+    return url
+
+DATABASE_URL = resolve_ipv4(raw_url)
 
 def get_connection():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
