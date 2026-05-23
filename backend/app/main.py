@@ -35,6 +35,6 @@ if os.path.isdir(DIST_DIR):
 def startup():
     try:
         init_db()
-        print("Database initialized")
+        print("Database ready")
     except Exception as e:
-        print("Startup error:", e)
+        print("Database unavailable (frontend still works):", e)

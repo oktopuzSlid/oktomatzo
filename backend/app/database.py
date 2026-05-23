@@ -6,26 +6,27 @@ from urllib.parse import urlparse
 
 raw_url = os.getenv("DATABASE_URL", "")
 
-# Resolve hostname to IPv4 to avoid Render-to-Supabase IPv6 routing issues
-def resolve_ipv4(url: str) -> str:
-    if not url:
-        return url
-    try:
-        parsed = urlparse(url)
-        host = parsed.hostname
-        if not host:
-            return url
-        # Get IPv4 address for the host
-        ipv4 = socket.getaddrinfo(host, None, socket.AF_INET)[0][4][0]
-        url = url.replace(host, ipv4)
-    except Exception:
-        pass  # fall back to original URL if resolution fails
+_resolved_url = None
+
+def _resolve_url():
+    global _resolved_url
+    if _resolved_url is not None:
+        return _resolved_url
+    url = raw_url
+    if url:
+        try:
+            parsed = urlparse(url)
+            host = parsed.hostname
+            if host:
+                ipv4 = socket.getaddrinfo(host, None, socket.AF_INET)[0][4][0]
+                url = url.replace(host, ipv4)
+        except Exception:
+            pass
+    _resolved_url = url
     return url
 
-DATABASE_URL = resolve_ipv4(raw_url)
-
 def get_connection():
-    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    return psycopg2.connect(_resolve_url(), cursor_factory=RealDictCursor)
 
 def init_db():
     conn = get_connection()

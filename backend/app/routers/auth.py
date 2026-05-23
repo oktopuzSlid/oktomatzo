@@ -5,10 +5,16 @@ from ..schemas.auth import SignUpRequest, LoginRequest, TokenResponse, UserRespo
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
+def db_or_503():
+    try:
+        return get_connection()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database unavailable: {e}")
+
 @router.post("/signup", response_model=TokenResponse)
 def signup(request: SignUpRequest):
     try:
-        conn = get_connection()
+        conn = db_or_503()
         cur = conn.cursor()
         cur.execute("SELECT id FROM users WHERE email = %s", (request.email,))
         if cur.fetchone():
@@ -34,12 +40,10 @@ def signup(request: SignUpRequest):
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest):
     try:
-        conn = get_connection()
+        conn = db_or_503()
         cur = conn.cursor()
         email = request.email.strip().lower()
-        cur.execute(
-            "SELECT id, name, email, password_hash FROM users WHERE email = %s", (email,)
-        )
+        cur.execute("SELECT id, name, email, password_hash FROM users WHERE email = %s", (email,))
         user = cur.fetchone()
         cur.close(); conn.close()
 
@@ -58,7 +62,7 @@ def get_profile(email: str = Depends(get_current_user)):
     try:
         if not email:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        conn = get_connection()
+        conn = db_or_503()
         cur = conn.cursor()
         cur.execute("SELECT id, name, email FROM users WHERE email = %s", (email,))
         user = cur.fetchone()
