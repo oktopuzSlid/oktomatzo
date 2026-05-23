@@ -9,21 +9,20 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 def signup(request: SignUpRequest):
     try:
         conn = get_connection()
-        existing = conn.execute(
-            "SELECT id FROM users WHERE email = ?", (request.email,)
-        ).fetchone()
-        if existing:
-            conn.close()
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM users WHERE email = %s", (request.email,))
+        if cur.fetchone():
+            cur.close(); conn.close()
             raise HTTPException(status_code=400, detail="Email already registered")
 
         hashed = hash_password(request.password)
-        cursor = conn.execute(
-            "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+        cur.execute(
+            "INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s) RETURNING id",
             (request.name, request.email, hashed)
         )
+        user_id = cur.fetchone()["id"]
         conn.commit()
-        user_id = cursor.lastrowid
-        conn.close()
+        cur.close(); conn.close()
 
         token = create_access_token({"sub": request.email, "user_id": user_id})
         return TokenResponse(access_token=token, user_name=request.name)
@@ -36,11 +35,13 @@ def signup(request: SignUpRequest):
 def login(request: LoginRequest):
     try:
         conn = get_connection()
-        user = conn.execute(
-            "SELECT id, name, email, password_hash FROM users WHERE email = ?",
-            (request.email.strip().lower(),)
-        ).fetchone()
-        conn.close()
+        cur = conn.cursor()
+        email = request.email.strip().lower()
+        cur.execute(
+            "SELECT id, name, email, password_hash FROM users WHERE email = %s", (email,)
+        )
+        user = cur.fetchone()
+        cur.close(); conn.close()
 
         if not user or not verify_password(request.password, user["password_hash"]):
             raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -58,10 +59,10 @@ def get_profile(email: str = Depends(get_current_user)):
         if not email:
             raise HTTPException(status_code=401, detail="Not authenticated")
         conn = get_connection()
-        user = conn.execute(
-            "SELECT id, name, email FROM users WHERE email = ?", (email,)
-        ).fetchone()
-        conn.close()
+        cur = conn.cursor()
+        cur.execute("SELECT id, name, email FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+        cur.close(); conn.close()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return UserResponse(id=user["id"], name=user["name"], email=user["email"])

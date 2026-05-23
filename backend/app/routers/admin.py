@@ -10,15 +10,17 @@ def db_status(user_email: str = Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     conn = get_connection()
-    user_count = conn.execute("SELECT COUNT(*) as c FROM users").fetchone()["c"]
-    project_count = conn.execute("SELECT COUNT(*) as c FROM projects").fetchone()["c"]
-    db_path = conn.execute("PRAGMA database_list").fetchone()
-    conn.close()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) as c FROM users")
+    user_count = cur.fetchone()["c"]
+    cur.execute("SELECT COUNT(*) as c FROM saved_states")
+    save_count = cur.fetchone()["c"]
+    cur.close(); conn.close()
 
     return {
-        "database": db_path["file"] if db_path else "unknown",
+        "database": "Supabase PostgreSQL",
         "users": user_count,
-        "projects": project_count,
+        "saves": save_count,
     }
 
 @router.get("/users")
@@ -27,12 +29,9 @@ def list_users(user_email: str = Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     conn = get_connection()
-    rows = conn.execute(
-        "SELECT id, name, email, created_at FROM users ORDER BY id DESC"
-    ).fetchall()
-    conn.close()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name, email, created_at FROM users ORDER BY id DESC")
+    rows = cur.fetchall()
+    cur.close(); conn.close()
 
-    return [
-        {"id": r["id"], "name": r["name"], "email": r["email"], "created_at": r["created_at"]}
-        for r in rows
-    ]
+    return [dict(r) for r in rows]

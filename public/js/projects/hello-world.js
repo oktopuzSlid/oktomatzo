@@ -1,45 +1,92 @@
-// ============================================================
-// hello-world.js — LOGIC for the HELLO WORLD project
-// ============================================================
-// Each project gets its own JS file.
-// Finds the #project-root div and fills it with interactive content.
-// ============================================================
-
 document.addEventListener('DOMContentLoaded', function () {
-  const root = document.getElementById('project-root')
-
+  var root = document.getElementById('project-root')
   if (!root) return
 
-  // Clear placeholder
-  root.innerHTML = ''
-
-  // Create a heading
-  const heading = document.createElement('h2')
-  heading.textContent = 'Hello, World!'
-  heading.style.color = 'var(--text-accent, #8b5cf6)'
+  var heading = document.createElement('h2')
+  heading.textContent = 'Persistent Counter'
   heading.style.fontSize = '1.5rem'
   heading.style.fontWeight = '700'
+  heading.style.color = 'var(--accent)'
 
-  // Create a description paragraph
-  const paragraph = document.createElement('p')
-  paragraph.textContent = 'Your project system is working. Add your own content here.'
-  paragraph.style.marginTop = '16px'
-  paragraph.style.color = 'var(--text-secondary, #a1a1aa)'
+  var counter = document.createElement('div')
+  counter.style.fontSize = '4rem'
+  counter.style.fontWeight = '700'
+  counter.style.marginTop = '16px'
+  counter.style.color = 'var(--text)'
+  counter.textContent = '—'
 
-  // Create a counter button to show JS interaction
-  const button = document.createElement('button')
-  button.textContent = 'Clicked 0 times'
-  button.className = 'btn btn-outline'
-  button.style.marginTop = '24px'
+  var desc = document.createElement('p')
+  desc.textContent = 'Click the buttons below. Your count is saved to the server.'
+  desc.style.color = 'var(--text-muted)'
+  desc.style.fontSize = '0.9rem'
+  desc.style.marginTop = '8px'
 
-  let count = 0
-  button.addEventListener('click', function () {
-    count++
-    button.textContent = 'Clicked ' + count + ' times'
-  })
+  var btnRow = document.createElement('div')
+  btnRow.style.display = 'flex'
+  btnRow.style.gap = '8px'
+  btnRow.style.marginTop = '20px'
 
-  // Append everything to the root container
+  var incrementBtn = document.createElement('button')
+  incrementBtn.className = 'btn btn-primary'
+  incrementBtn.textContent = '+1'
+
+  var saveBtn = document.createElement('button')
+  saveBtn.className = 'btn btn-outline'
+  saveBtn.textContent = 'Save Count'
+
+  var statusMsg = document.createElement('p')
+  statusMsg.style.color = 'var(--text-muted)'
+  statusMsg.style.fontSize = '0.8rem'
+  statusMsg.style.marginTop = '12px'
+
+  btnRow.appendChild(incrementBtn)
+  btnRow.appendChild(saveBtn)
+
   root.appendChild(heading)
-  root.appendChild(paragraph)
-  root.appendChild(button)
+  root.appendChild(counter)
+  root.appendChild(desc)
+  root.appendChild(btnRow)
+  root.appendChild(statusMsg)
+
+  var count = 0
+  var SAVE_LABEL = 'counter'
+
+  function updateDisplay() {
+    counter.textContent = count
+  }
+
+  async function loadCount() {
+    try {
+      var token = localStorage.getItem('token')
+      if (!token) { statusMsg.textContent = 'Log in to save your count across sessions.'; return }
+      var res = await fetch('/api/saves/hello-world', { headers: { 'Authorization': 'Bearer ' + token } })
+      var saves = await res.json()
+      if (Array.isArray(saves)) {
+        var found = saves.find(function (s) { return s.label === SAVE_LABEL })
+        if (found && found.state && typeof found.state.count === 'number') {
+          count = found.state.count
+          updateDisplay()
+          statusMsg.textContent = 'Count restored from server.'
+        }
+      }
+    } catch (e) { statusMsg.textContent = 'Could not load saved count.' }
+  }
+
+  async function saveCount() {
+    try {
+      var token = localStorage.getItem('token')
+      if (!token) { statusMsg.textContent = 'Log in first to save.'; return }
+      await fetch('/api/saves', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ project_slug: 'hello-world', label: SAVE_LABEL, state: { count: count } })
+      })
+      statusMsg.textContent = 'Saved! Count = ' + count
+    } catch (e) { statusMsg.textContent = 'Save failed.' }
+  }
+
+  incrementBtn.addEventListener('click', function () { count++; updateDisplay(); statusMsg.textContent = '' })
+  saveBtn.addEventListener('click', saveCount)
+
+  loadCount()
 })

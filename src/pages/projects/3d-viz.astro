@@ -1,27 +1,23 @@
 ---
 import Base from '../../layouts/Base.astro'
-import ProjectNav from '../../components/ProjectNav.astro'
 ---
 
 <Base title="3D Visualizer | Oktomatzo Host" description="Interactive 3D scene with Three.js">
-  <section class="page-section" style="padding-bottom: 0;">
+  <section class="page-section" style="padding-bottom:0;">
     <div class="container">
-      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-        <button id="toggle-wireframe" class="btn btn-outline">Toggle Wireframe</button>
-        <button id="toggle-rotation" class="btn btn-outline">Pause Rotation</button>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <button id="toggle-wireframe" class="btn btn-outline" style="padding:8px 18px;">Wireframe</button>
+        <button id="toggle-rotation" class="btn btn-outline" style="padding:8px 18px;">Pause</button>
+        <button id="save-scene" class="btn btn-outline" style="padding:8px 18px;">Save Scene</button>
+        <button id="upload-model" class="btn btn-outline" style="padding:8px 18px;">Upload Model</button>
+        <input type="file" id="file-input" accept=".glb,.gltf,.obj,.stl" style="display:none">
       </div>
 
-      <div id="three-container" style="width: 100%; height: 500px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.15);"></div>
+      <div id="saves-bar" style="display:none;margin-bottom:12px;gap:8px;flex-wrap:wrap;"></div>
+
+      <div id="three-container" style="width:100%;height:480px;border-radius:12px;overflow:hidden;border:1px solid rgba(59,130,246,0.15);"></div>
     </div>
   </section>
-
-  <ProjectNav currentSlug="3d-viz" />
-
-  <footer class="site-footer" style="border-top: none;">
-    <div class="container">
-      <p>&copy; 2026 Oktomatzo Host</p>
-    </div>
-  </footer>
 </Base>
 
 <script type="importmap">
