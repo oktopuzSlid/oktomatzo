@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro'
+import { projects } from '../../lib/projects'
 ---
 
 <Base title="3D Visualizer | Oktomatzo Host" description="Interactive 3D scene with Three.js">
@@ -18,6 +19,22 @@ import Base from '../../layouts/Base.astro'
       <div id="three-container" style="width:100%;height:480px;border-radius:12px;overflow:hidden;border:1px solid rgba(59,130,246,0.15);"></div>
     </div>
   </section>
+
+  <div class="project-strip-nav">
+    <div class="container">
+      <div class="strip-track">
+        {projects.map(p => (
+          <a href={p.href} class={"strip-card" + (p.slug === '3d-viz' ? ' active' : '')}>
+            <span class="strip-icon">
+              {p.icon === 'cube' && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>}
+              {p.icon === 'smile' && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>}
+            </span>
+            <span class="strip-label">{p.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
 </Base>
 
 <script type="importmap">
@@ -28,4 +45,4 @@ import Base from '../../layouts/Base.astro'
   }
 }
 </script>
-<script src="/js/projects/three-d-viz.js" type="module" defer></script>
+<script src="/js/projects/three-d-viz.js" type="module"></script>

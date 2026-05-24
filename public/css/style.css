@@ -116,42 +116,7 @@ main{flex:1}
 .page-title{font-size:2rem;font-weight:700;letter-spacing:-.03em;line-height:1.15}
 .page-description{margin-top:8px;font-size:1rem;color:var(--text-secondary)}
 
-/* ── PROJECTS PAGE ── */
-.projects-page{
-  display:flex;flex-direction:column;
-  height:calc(100vh - 60px);padding:0;
-  overflow:hidden
-}
-.viewer-panel{
-  flex:1;min-height:0;position:relative;
-  background:var(--bg-elevated);
-  overflow:hidden
-}
-.viewer-panel iframe{
-  width:100%;height:100%;border:none;display:block
-}
-.arrow{
-  position:absolute;top:50%;transform:translateY(-50%);z-index:10;
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(8px);
-  border:1px solid var(--border);color:var(--text);
-  font-size:1.5rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;opacity:0;font-family:var(--font);line-height:1
-}
-.viewer-panel:hover .arrow{opacity:1}
-@media(hover:none),(pointer:coarse){.arrow{opacity:1;width:40px;height:40px;font-size:1.3rem}}
-.arrow:hover{opacity:1;border-color:var(--accent);color:var(--accent);background:rgba(0,0,0,.75)}
-.arrow-prev{left:12px}
-.arrow-next{right:12px}
-
 /* PROJECT STRIP */
-.project-strip{
-  flex-shrink:0;
-  border-top:1px solid var(--border);
-  background:var(--bg-surface);
-  padding:10px 16px
-}
 .strip-track{
   display:flex;gap:8px;
   overflow-x:auto;overflow-y:hidden;
@@ -225,7 +190,7 @@ main{flex:1}
   background:rgba(0,0,0,.3)
 }
 
-/* OLD GRID STYLES (unused) */
+/* PROJECT GRID (used on /projects/ listing) */
 .project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
 .project-card,.glass{background:var(--bg-card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius)}
 .project-card{padding:24px;display:flex;flex-direction:column;transition:all .3s}
@@ -275,4 +240,7 @@ main{flex:1}
   .page-title{font-size:1.5rem}
   .nav-link{padding:6px 10px;font-size:.78rem}
   .strip-card{padding:8px 14px;font-size:.78rem}
+}
+@media(max-width:640px){
+  .page-section>[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
 }
