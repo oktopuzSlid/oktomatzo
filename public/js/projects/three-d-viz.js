@@ -78,14 +78,20 @@ function onResize() {
 }
 window.addEventListener('resize', onResize)
 
+// Helper: safe addEventListener
+function onId(id, fn) {
+  var el = document.getElementById(id)
+  if (el) el.addEventListener('click', fn)
+}
+
 // Wireframe toggle
-document.getElementById('toggle-wireframe').addEventListener('click', function () {
+onId('toggle-wireframe', function () {
   material.wireframe = !material.wireframe
   this.textContent = material.wireframe ? 'Show Solid' : 'Wireframe'
 })
 
 // Rotation toggle
-document.getElementById('toggle-rotation').addEventListener('click', function () {
+onId('toggle-rotation', function () {
   rotating = !rotating
   this.textContent = rotating ? 'Pause' : 'Resume'
 })
@@ -97,7 +103,7 @@ renderer.domElement.addEventListener('click', function () {
 })
 
 // ── SAVE SCENE ──
-document.getElementById('save-scene').addEventListener('click', async function () {
+onId('save-scene', async function () {
   var token = localStorage.getItem('token')
   if (!token) { return alert('Log in to save scenes.') }
 
@@ -165,12 +171,10 @@ loadSavesList()
 
 // ── UPLOAD MODEL ──
 var fileInput = document.getElementById('file-input')
-var uploadBtn = document.getElementById('upload-model')
-
-uploadBtn.addEventListener('click', function () {
+onId('upload-model', function () {
   var token = localStorage.getItem('token')
   if (!token) { return alert('Log in to upload models.') }
-  fileInput.click()
+  if (fileInput) fileInput.click()
 })
 
 fileInput.addEventListener('change', async function () {

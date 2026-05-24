@@ -3,12 +3,12 @@ import Base from '../../layouts/Base.astro'
 import { projects } from '../../lib/projects'
 ---
 
-<Base title="Projects | Oktomatzo Host" description="Browse all interactive projects">
+<Base title="Projects | Oktomatzo Host" description="Browse and explore projects">
   <section class="projects-page">
     <div class="viewer-panel">
-      <button class="arrow arrow-prev" id="arrow-prev" aria-label="Previous">&#8249;</button>
-      <button class="arrow arrow-next" id="arrow-next" aria-label="Next">&#8250;</button>
-      <iframe id="project-frame" src={projects[0].embedHref || projects[0].href} title="Project"></iframe>
+      <button class="arrow arrow-prev" id="arrow-prev">&#8249;</button>
+      <button class="arrow arrow-next" id="arrow-next">&#8250;</button>
+      <iframe id="project-frame" src={projects[0].embedHref || projects[0].href} title="Project viewer"></iframe>
     </div>
 
     <nav class="project-strip">

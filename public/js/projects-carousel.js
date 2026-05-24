@@ -11,23 +11,23 @@ document.addEventListener('DOMContentLoaded', function () {
   var current = 0
 
   function select(i) {
+    if (cards.length === 0) return
     if (i < 0) i = cards.length - 1
     if (i >= cards.length) i = 0
     current = i
 
-    cards.forEach(function (c) { c.classList.remove('active') })
-    var card = cards[current]
-    card.classList.add('active')
+    for (var c = 0; c < cards.length; c++) cards[c].classList.remove('active')
+    cards[current].classList.add('active')
 
-    var href = card.getAttribute('data-href')
+    var href = cards[current].getAttribute('data-href')
     if (href) frame.src = href
 
-    card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    cards[current].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }
 
-  cards.forEach(function (c, i) {
-    c.addEventListener('click', function () { select(i) })
-  })
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].addEventListener('click', function (idx) { return function () { select(idx) } }(i))
+  }
 
   prev.addEventListener('click', function () { select(current - 1) })
   next.addEventListener('click', function () { select(current + 1) })
