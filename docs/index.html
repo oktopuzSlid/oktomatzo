@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation — Oktomatzo Host</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #000000;
+      --surface: rgba(17,17,17,0.8);
+      --surface-hover: rgba(26,26,26,0.9);
+      --border: rgba(59,130,246,0.2);
+      --text: #ffffff;
+      --text-muted: #6b7280;
+      --accent: #3b82f6;
+      --green: #10b981;
+      --red: #ef4444;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+    }
+    nav.sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 280px; height: 100vh;
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px; overflow-y: auto; z-index: 100;
+    }
+    nav.sidebar .logo { font-size: 1.25rem; font-weight: 700; color: var(--accent); margin-bottom: 24px; display: block; text-decoration: none; }
+    nav.sidebar .logo span { color: var(--text); }
+    nav.sidebar .section { margin-bottom: 20px; }
+    nav.sidebar .section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+    nav.sidebar a {
+      display: block; padding: 6px 12px; color: var(--text-muted);
+      text-decoration: none; font-size: 0.85rem; border-radius: 6px; transition: all 0.15s;
+    }
+    nav.sidebar a:hover, nav.sidebar a.active { color: var(--accent); background: var(--surface); }
+    main.content {
+      margin-left: 280px; flex: 1;
+      padding: 48px 48px 80px; max-width: 900px;
+    }
+    h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 8px; }
+    h1 .accent { color: var(--accent); }
+    h2 { font-size: 1.5rem; margin-top: 64px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    h2:first-of-type { margin-top: 0; }
+    h3 { font-size: 1.125rem; margin-top: 32px; margin-bottom: 8px; color: var(--accent); }
+    p { color: var(--text-muted); margin-bottom: 16px; }
+    p strong { color: var(--text); }
+    code { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; color: var(--accent); }
+    pre {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px; margin: 16px 0 24px;
+      overflow-x: auto; font-size: 0.8rem; line-height: 1.6;
+    }
+    pre code { background: none; padding: 0; color: var(--text); }
+    ul, ol { color: var(--text-muted); padding-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 8px; }
+    li strong { color: var(--text); }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+    th, td { text-align: left; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+    th { color: var(--accent); font-weight: 500; }
+    td { color: var(--text-muted); }
+    .tip { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); border-radius: 8px; padding: 16px 20px; margin: 16px 0; font-size: 0.9rem; color: var(--text); }
+    .tip::before { content: '\24D8  '; color: var(--accent); font-weight: 700; }
+    .step { margin-bottom: 32px; }
+    .step-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--accent); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 700; margin-right: 8px; }
+    .file-path { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+    .file-path::before { content: '\1F4C4  '; }
+    .note { font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+    .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; display: inline-block; margin-bottom: 16px; }
+    .back-link:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav class="sidebar">
+    <a href="/" class="logo">Oktomatzo<span>Host</span></a>
+    <div class="section">
+      <div class="section-title">Overview</div>
+      <a href="#overview">What Is This?</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#folder-structure">Folder Structure</a>
+    </div>
+    <div class="section">
+      <div class="section-title">Adding a Project</div>
+      <a href="#add-project">1. Create the folder</a>
+      <a href="#add-project-json">2. Add metadata</a>
+      <a href="#add-project-html">3. Write index.html</a>
+      <a href="#add-project-js">4. Write main.js</a>
+      <a href="#add-project-register">5. Register (optional)</a>
+    </div>
+    <div class="section">
+      <div class="section-title">Platform SDK</div>
+      <a href="#sdk-auth">Auth</a>
+      <a href="#sdk-saves">Saves</a>
+      <a href="#sdk-scores">Scores</a>
+      <a href="#sdk-models">Models</a>
+    </div>
+    <div class="section">
+      <div class="section-title">API Reference</div>
+      <a href="#api-endpoints">All Endpoints</a>
+      <a href="#api-auth">Auth</a>
+      <a href="#api-saves">Saves</a>
+      <a href="#api-scores">Scores</a>
+      <a href="#api-models">Models</a>
+    </div>
+    <div class="section">
+      <div class="section-title">Reference</div>
+      <a href="#auto-discovery">Auto-Discovery</a>
+      <a href="#how-it-runs">How It Runs</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <a href="/" class="back-link">&larr; Back to Home</a>
+    <h1>Oktomatzo <span class="accent">Host</span> Documentation</h1>
+    <p style="font-size: 1.1rem;">A full-stack platform that hosts independent interactive projects — 3D visualizers, minigames, AI tools, or anything else — under a single dashboard.</p>
+
+    <!-- ─── OVERVIEW ─── -->
+    <h2 id="overview">What Is This?</h2>
+    <p>Oktomatzo Host is a platform that <strong>wraps independent projects</strong> with shared services: authentication, data persistence (save/load), leaderboards, and file storage.</p>
+    <p>Each project is a <strong>self-contained folder</strong> in <code>projects/{slug}/</code>. It works fully on its own — open the folder's <code>index.html</code> directly in a browser and it runs. When served through the platform, the project is wrapped with navigation, header, footer, and a JavaScript SDK that provides access to the platform's API.</p>
+    <div class="tip">A project doesn't need to know about the platform to work. The SDK is optional. If your project doesn't need auth or saves, just drop it in and it appears.</div>
+
+    <!-- ─── ARCHITECTURE ─── -->
+    <h2 id="architecture">Architecture</h2>
+    <pre><code>User visits /projects/my-game/
+                │
+                ▼
+     ┌──────────────────────┐
+     │  Backend (FastAPI)   │ ← Generates wrapper HTML dynamically
+     │                      │
+     │  ┌─ header ────────┐ │ ← Logo + navigation
+     │  │                 │ │
+     │  │  &lt;div id="     │ │ ← Project renders here
+     │  │  project-root"> │ │
+     │  │                 │ │
+     │  ├─ SDK ───────────┤ │ ← window.Platform available
+     │  ├─ nav strip ─────┤ │ ← Navigation between projects
+     │  └─ footer ────────┘ │ ← Health indicator + copyright
+     └──────────────────────┘</code></pre>
+
+    <h3>Key Principles</h3>
+    <ul>
+      <li><strong>Projects are folders.</strong> Each project lives in its own directory under <code>projects/</code>. No Astro pages, no config files needed.</li>
+      <li><strong>Zero build to add.</strong> Create a folder with the right files, and the platform picks it up automatically. No rebuild, no restart.</li>
+      <li><strong>The SDK respects independence.</strong> <code>window.Platform</code> is available if the project wants it. A project that doesn't use it runs exactly the same.</li>
+      <li><strong>Same origin.</strong> The platform and projects are served from the same domain. No CORS, no iframe complications.</li>
+    </ul>
+
+    <!-- ─── FOLDER STRUCTURE ─── -->
+    <h2 id="folder-structure">Folder Structure</h2>
+    <pre><code>oktomatzo/
+├── projects/             &lt;-- Every project lives here, one folder each
+│   ├── hello-world/      &lt;-- Works standalone, also served via platform
+│   │   ├── project.json  &lt;-- Metadata: title, description, icon, category
+│   │   ├── index.html    &lt;-- Standalone HTML entry point
+│   │   └── main.js       &lt;-- Project logic (loaded by platform wrapper)
+│   └── 3d-viz/
+│       ├── project.json
+│       ├── index.html
+│       └── main.js
+│
+├── platform/             &lt;-- Platform-wide shared assets
+│   └── sdk.js            &lt;-- window.Platform SDK (auto-included by wrapper)
+│
+├── backend/              &lt;-- Python FastAPI server
+│   └── src/
+│       ├── main.py       &lt;-- Entry point: routes + static mounts
+│       ├── routers/
+│       │   └── projects_display.py  &lt;-- Dynamic wrapper + listing
+│       ├── services.py   &lt;-- Business logic
+│       └── repositories.py  &lt;-- Database queries
+│
+├── frontend/             &lt;-- Astro static site (home, about, login pages)
+│   ├── src/presentation/pages/
+│   │   ├── index.astro   &lt;-- Home page (branding + login/signup)
+│   │   └── about.astro   &lt;-- About page
+│   └── public/
+│       ├── css/style.css &lt;-- Global dark theme
+│       ├── js/login.js   &lt;-- Auth form logic
+│       ├── index.html    &lt;-- This documentation (served at /docs/)
+│       └── report-v2.html  &lt;-- Migration report (served at /docs/report-v2.html)
+│
+├── generated/            &lt;-- Build artifacts (gitignored)
+│   └── frontend/dist/    &lt;-- Astro build output
+│
+└── config/
+    └── .env.example      &lt;-- Template for environment variables</code></pre>
+
+    <!-- ─── ADDING A PROJECT ─── -->
+    <h2 id="add-project">Adding a New Project — Step by Step</h2>
+    <p>Adding a project takes <strong>4 steps</strong>. The project works immediately without any build step or server restart.</p>
+
+    <h3>What Goes in the Folder</h3>
+    <pre><code>projects/my-minigame/
+├── project.json     ← REQUIRED: metadata (title, description, icon, category)
+├── index.html       ← RECOMMENDED: standalone HTML (works when opened directly)
+└── main.js          ← RECOMMENDED: your game logic (loaded by the platform wrapper)</code></pre>
+
+    <div class="tip">Only <code>project.json</code> is strictly required. The platform wrapper loads <code>main.js</code> automatically. Without <code>index.html</code>, the project only works through the platform URL, not standalone.</div>
+
+    <div class="step">
+      <h3 id="add-project-json"><span class="step-number">1</span> Create the folder</h3>
+      <p class="file-path">projects/my-minigame/</p>
+      <pre><code>mkdir projects\my-minigame</code></pre>
+      <p>The folder name becomes the URL slug: <code>/projects/my-minigame/</code></p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-number">2</span> Add project metadata</h3>
+      <p class="file-path">projects/my-minigame/project.json</p>
+      <pre><code>{
+  "slug": "my-minigame",
+  "title": "My Minigame",
+  "description": "A fun browser game with score saving.",
+  "category": "interactive",
+  "icon": "smile"
+}</code></pre>
+      <p>Categories: <code>threejs</code>, <code>data-viz</code>, <code>interactive</code>, <code>tool</code>.<br>
+      Icons: <code>smile</code>, <code>cube</code>.</p>
+    </div>
+
+    <div class="step">
+      <h3 id="add-project-html"><span class="step-number">3</span> Write the project HTML</h3>
+      <p class="file-path">projects/my-minigame/index.html</p>
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;My Minigame — Oktomatzo Host&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/style.css"&gt;
+  &lt;style&gt;
+    body { background: #000; min-height: 100vh; display: flex;
+           align-items: center; justify-content: center; }
+    #project-root { text-align: center; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="project-root"&gt;
+    &lt;p style="color:var(--text-muted);"&gt;Loading...&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;script src="main.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p><strong>The SDK is NOT needed here.</strong> When loaded through the platform wrapper (<code>/projects/{slug}/</code>), the backend automatically injects the SDK. This HTML is for standalone use only — open it directly in a browser and the project runs independently.</p>
+      <div class="tip">The platform wrapper auto-injects: header, footer, nav strip, and <code>window.Platform</code>. Your <code>main.js</code> can use <code>window.Platform</code> directly without including anything.</div>
+    </div>
+
+    <div class="step">
+      <h3 id="add-project-modules"><span class="step-number">4</span> (Optional) ES Modules &amp; Import Maps</h3>
+      <p>If your project uses ES modules (<code>import</code> statements, like Three.js), add these fields to <code>project.json</code>:</p>
+      <pre><code>{
+  "module": true,
+  "importmap": {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/"
+    }
+  }
+}</code></pre>
+      <p>The platform wrapper will then add <code>&lt;script type="importmap"&gt;</code> and <code>type="module"</code> to your <code>main.js</code> tag automatically. Your project's standalone <code>index.html</code> still needs its own importmap for non-platform use.</p>
+    </div>
+
+    <div class="step">
+      <h3 id="add-project-js"><span class="step-number">5</span> Write the game logic</h3>
+      <p class="file-path">projects/my-minigame/main.js</p>
+      <pre><code>document.addEventListener('DOMContentLoaded', function () {
+  var root = document.getElementById('project-root')
+  if (!root) return
+
+  // Your game UI here
+  root.innerHTML = '&lt;h2 style="color:var(--accent);"&gt;My Minigame&lt;/h2&gt;'
+
+  // ── Using the Platform SDK (optional) ──
+  var p = window.Platform
+
+  // Save score
+  if (p &amp;&amp; p.auth.isLoggedIn()) {
+    p.scores.submit('my-minigame', 100, { level: 3 })
+      .then(function () { console.log('Score saved!') })
+      .catch(function () { console.log('Score failed') })
+  }
+
+  // Load leaderboard
+  if (p) {
+    p.scores.leaderboard('my-minigame')
+      .then(function (scores) { console.log('Leaderboard:', scores) })
+  }
+})</code></pre>
+    </div>
+
+    <!-- ─── PLATFORM SDK ─── -->
+    <h2 id="sdk-reference">Platform SDK Reference</h2>
+    <p>The SDK is automatically loaded on every project wrapper page. It's available as <code>window.Platform</code>. If your project is opened standalone (not through the platform), <code>window.Platform</code> is still available — API calls will work if a backend is running on the same domain.</p>
+
+    <h3 id="sdk-auth">Auth</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>Platform.auth.isLoggedIn()</code></td><td>boolean</td><td>Whether the user has a JWT token</td></tr>
+        <tr><td><code>Platform.auth.getUserName()</code></td><td>string | null</td><td>Logged-in user's display name</td></tr>
+        <tr><td><code>Platform.auth.getToken()</code></td><td>string | null</td><td>The raw JWT token</td></tr>
+        <tr><td><code>Platform.auth.signup(name, email, password)</code></td><td>Promise</td><td>Create account + auto-login</td></tr>
+        <tr><td><code>Platform.auth.login(email, password)</code></td><td>Promise</td><td>Login, stores token in localStorage</td></tr>
+        <tr><td><code>Platform.auth.logout()</code></td><td>void</td><td>Clears token from localStorage</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sdk-saves">Saves</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>Platform.saves.save(slug, label, state)</code></td><td>Promise</td><td>Save game state (upserts by label)</td></tr>
+        <tr><td><code>Platform.saves.load(slug)</code></td><td>Promise</td><td>Load all saves for this project</td></tr>
+        <tr><td><code>Platform.saves.deleteSave(id)</code></td><td>Promise</td><td>Delete a specific save by ID</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sdk-scores">Scores</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>Platform.scores.submit(slug, score, metadata?)</code></td><td>Promise</td><td>Submit a score for the leaderboard</td></tr>
+        <tr><td><code>Platform.scores.leaderboard(slug)</code></td><td>Promise</td><td>Get top 20 scores for this project</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sdk-models">Models (3D file uploads)</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>Platform.models.upload(slug, file)</code></td><td>Promise</td><td>Upload a 3D model (.glb, .gltf, .obj, .stl)</td></tr>
+        <tr><td><code>Platform.models.list()</code></td><td>Promise</td><td>List all uploaded models for this user</td></tr>
+        <tr><td><code>Platform.models.deleteModel(id)</code></td><td>Promise</td><td>Delete a model by ID</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── API REFERENCE ─── -->
+    <h2 id="api-endpoints">API Endpoints</h2>
+    <p>All endpoints are under <code>/api/</code>. Responses are JSON. Authentication uses <code>Authorization: Bearer &lt;token&gt;</code> header.</p>
+
+    <table>
+      <thead><tr><th>Method</th><th>URL</th><th>Auth</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td><td>/api/health</td><td>No</td><td>Health check</td></tr>
+        <tr><td>POST</td><td>/api/auth/signup</td><td>No</td><td>Create account</td></tr>
+        <tr><td>POST</td><td>/api/auth/login</td><td>No</td><td>Log in</td></tr>
+        <tr><td>GET</td><td>/api/auth/me</td><td>Yes</td><td>Get profile</td></tr>
+        <tr><td>POST</td><td>/api/saves</td><td>Yes</td><td>Save state</td></tr>
+        <tr><td>GET</td><td>/api/saves/{slug}</td><td>Yes</td><td>Load saves</td></tr>
+        <tr><td>DELETE</td><td>/api/saves/{id}</td><td>Yes</td><td>Delete save</td></tr>
+        <tr><td>POST</td><td>/api/scores</td><td>Yes</td><td>Submit score</td></tr>
+        <tr><td>GET</td><td>/api/scores/{slug}</td><td>No</td><td>Get leaderboard</td></tr>
+        <tr><td>POST</td><td>/api/models/upload</td><td>Yes</td><td>Upload 3D model</td></tr>
+        <tr><td>GET</td><td>/api/models</td><td>Yes</td><td>List models</td></tr>
+        <tr><td>DELETE</td><td>/api/models/{id}</td><td>Yes</td><td>Delete model</td></tr>
+        <tr><td>GET</td><td>/api/platform/projects</td><td>No</td><td>List discovered projects</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── AUTO-DISCOVERY ─── -->
+    <h2 id="auto-discovery">How Auto-Discovery Works</h2>
+    <p>When the backend starts (or when a request hits <code>/api/platform/projects</code>), it scans the <code>projects/</code> directory for subfolders containing a <code>project.json</code> file. Each valid folder becomes a project.</p>
+    <p>The listing page at <code>/projects/</code> and the nav strip on project pages both fetch from this API, so they always show the current set of projects.</p>
+    <p>To add a project: just create its folder. To remove one: delete the folder. No build, no config changes.</p>
+
+    <!-- ─── HOW IT RUNS ─── -->
+    <h2 id="how-it-runs">How It Runs</h2>
+    <h3>How to Run</h3>
+    <p>The project is <strong>backend-driven</strong> — the Python server serves everything (API, frontend pages, project wrappers, docs). No package manager required.</p>
+
+    <h4>🖥️ Run the backend (no npm needed)</h4>
+    <pre><code>cd backend
+.venv\Scripts\uvicorn src.main:app --reload --port 8001
+
+# Or use the launcher script:
+scripts\dev.ps1
+
+# Then visit: http://localhost:8001/</code></pre>
+    <p>Everything works from one port: home page, projects, 3D visualizer, docs, API, SDK — all of it.</p>
+
+    <h4>🔄 (Optional) Frontend dev server for page editing</h4>
+    <p>If you're editing the Astro pages and need hot-reload, use Node.js from <code>frontend/</code> (requires the frontend dependencies installed first). Keep the backend on port 8001 running for everything else.</p>
+
+    <h3>Documentation Files</h3>
+    <ul>
+      <li><strong>This page:</strong> <code>docs/index.html</code> (served at <code>/docs/</code>)</li>
+      <li><strong>Migration report:</strong> <code>docs/report-v2.html</code> (served at <code>/docs/report-v2.html</code>)</li>
+    </ul>
+
+    <h3>Production (Render)</h3>
+    <pre><code>Build Command:
+  cd frontend && npx astro build && cd ../backend && pip install -r requirements.txt
+
+Start Command:
+  cd backend && uvicorn src.main:app --host 0.0.0.0 --port $PORT
+
+Environment Variables (set in Render dashboard):
+  DATABASE_URL       # Supabase PostgreSQL connection string
+  SECRET_KEY         # Random token (python -c "import secrets; print(secrets.token_hex(32))")
+  SUPABASE_URL       # (optional) For model file uploads
+  SUPABASE_SERVICE_KEY # (optional) For model file uploads</code></pre>
+  </main>
+</body>
+</html>

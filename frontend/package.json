@@ -1,0 +1,19 @@
+{
+  "name": "oktomatzo-host",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cd ../backend && .venv\\Scripts\\uvicorn src.main:app --reload --port 8001",
+    "dev:frontend": "astro dev",
+    "dev:all": "concurrently \"astro dev\" \"cd ../backend && .venv\\Scripts\\uvicorn src.main:app --reload --port 8001\"",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

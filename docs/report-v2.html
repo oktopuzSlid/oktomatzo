@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v2.0 Migration Report — Oktomatzo Host</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #000000;
+      --surface: rgba(17,17,17,0.8);
+      --border: rgba(59,130,246,0.2);
+      --text: #ffffff;
+      --text-muted: #6b7280;
+      --accent: #3b82f6;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+    }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 48px 80px;
+    }
+    h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 8px; }
+    h1 .accent { color: var(--accent); }
+    .subtitle { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 48px; }
+    h2 { font-size: 1.5rem; margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.125rem; margin-top: 32px; margin-bottom: 8px; color: var(--accent); }
+    p { color: var(--text-muted); margin-bottom: 16px; }
+    p strong { color: var(--text); }
+    code { background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; color: var(--accent); }
+    ul, ol { color: var(--text-muted); padding-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 8px; }
+    li strong { color: var(--text); }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+    th, td { text-align: left; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+    th { color: var(--accent); font-weight: 500; }
+    td { color: var(--text-muted); }
+    .tag { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+    .tag-green { background: rgba(16,185,129,0.12); color: var(--green); }
+    .tag-red { background: rgba(239,68,68,0.12); color: var(--red); }
+    .tag-yellow { background: rgba(245,158,11,0.12); color: var(--yellow); }
+    .tag-blue { background: rgba(59,130,246,0.12); color: var(--accent); }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+    .stat-card { background: rgba(255,255,255,0.025); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; }
+    .stat-card .num { font-size: 2rem; font-weight: 700; color: var(--accent); }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
+    .comparison > div { padding: 20px; border-radius: 10px; border: 1px solid var(--border); }
+    .comparison .old { background: rgba(239,68,68,0.03); }
+    .comparison .new { background: rgba(16,185,129,0.03); }
+    .comparison .label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+    .comparison .old .label { color: var(--red); }
+    .comparison .new .label { color: var(--green); }
+    .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; display: inline-block; margin-bottom: 24px; }
+    .back-link:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a href="/" class="back-link">&larr; Back to Home</a>
+  <h1>Oktomatzo <span class="accent">Host</span> v2.0</h1>
+  <p class="subtitle">Migration Report — Complete restructuring from v1.0 to v2.0</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">46</div><div class="label">Files Changed</div></div>
+    <div class="stat-card"><div class="num">33</div><div class="label">Files Deleted (old)</div></div>
+    <div class="stat-card"><div class="num">16</div><div class="label">New Files Created</div></div>
+  </div>
+
+  <!-- ─── WHAT CHANGED ─── -->
+  <h2>1. What Changed</h2>
+
+  <div class="comparison">
+    <div class="old">
+      <div class="label">Before (v1.0)</div>
+      <p>Projects were Astro pages. Each project needed a <code>.astro</code> file, a <code>.js</code> file in <code>public/js/projects/</code>, and an entry in <code>projects.ts</code>. Adding a project required editing 3 files + building the frontend.</p>
+      <p><code>backend/app/</code> — flat structure with SQL mixed into route handlers</p>
+      <p>Frontend (<code>src/</code> + <code>public/</code>) at project root</p>
+    </div>
+    <div class="new">
+      <div class="label">After (v2.0)</div>
+      <p>Projects are self-contained folders in <code>projects/{slug}/</code>. Each works standalone. The platform discovers them automatically — just create a folder.</p>
+      <p><code>backend/src/</code> — Clean Architecture: models, services, repositories separated</p>
+      <p>Frontend moved to <code>frontend/</code> with layered structure</p>
+    </div>
+  </div>
+
+  <h3>Folder Restructure</h3>
+  <table>
+    <thead><tr><th>Old Path</th><th>New Path</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/</code> (root)</td><td><code>frontend/src/presentation/</code></td><td>Astro pages, layouts, components moved</td></tr>
+      <tr><td><code>public/</code> (root)</td><td><code>frontend/public/</code></td><td>Static assets moved</td></tr>
+      <tr><td><code>backend/app/</code></td><td><code>backend/src/</code></td><td>Python source restructured</td></tr>
+      <tr><td><code>backend/app/routers/</code></td><td><code>backend/src/routers/</code></td><td>Same location, thinner handlers</td></tr>
+      <tr><td><code>backend/app/schemas/</code></td><td><code>backend/src/models/</code></td><td>Renamed for clarity</td></tr>
+      <tr><td>—</td><td><code>backend/src/services.py</code></td><td><span class="tag tag-green">NEW</span> Business logic extracted from routers</td></tr>
+      <tr><td>—</td><td><code>backend/src/repositories.py</code></td><td><span class="tag tag-green">NEW</span> All SQL extracted from routers</td></tr>
+      <tr><td>—</td><td><code>backend/src/middleware.py</code></td><td><span class="tag tag-green">NEW</span> Rate limiting + error handler</td></tr>
+      <tr><td>—</td><td><code>projects/{slug}/</code></td><td><span class="tag tag-green">NEW</span> Self-contained project folders</td></tr>
+      <tr><td>—</td><td><code>platform/sdk.js</code></td><td><span class="tag tag-green">NEW</span> Platform SDK for projects</td></tr>
+      <tr><td>—</td><td><code>config/</code></td><td><span class="tag tag-green">NEW</span> Shared configuration</td></tr>
+      <tr><td>—</td><td><code>generated/</code></td><td><span class="tag tag-green">NEW</span> Single folder for all build artifacts</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ─── BUGS FIXED ─── -->
+  <h2>2. Bugs Fixed</h2>
+  <table>
+    <thead><tr><th>Bug</th><th>Severity</th><th>File</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>uploadBtn</code> undefined → ReferenceError on model upload</td>
+        <td><span class="tag tag-red">Critical</span></td>
+        <td><code>three-d-viz.js:190</code></td>
+        <td>Added missing <code>var uploadBtn = document.getElementById('upload-model')</code></td>
+      </tr>
+      <tr>
+        <td>Admin dashboard shows "SQLite" when using PostgreSQL</td>
+        <td><span class="tag tag-red">High</span></td>
+        <td><code>admin.html:86</code></td>
+        <td>Dynamic detection: <code>data.database === 'PostgreSQL'</code></td>
+      </tr>
+      <tr>
+        <td><code>load_dotenv()</code> runs after imports — .env vars never read at startup</td>
+        <td><span class="tag tag-red">High</span></td>
+        <td><code>main.py:4-10</code></td>
+        <td>Moved <code>load_dotenv()</code> before all imports</td>
+      </tr>
+      <tr>
+        <td><code>get_current_user()</code> returned email-only — forced N+1 subqueries</td>
+        <td><span class="tag tag-yellow">Medium</span></td>
+        <td><code>auth.py</code></td>
+        <td>Now returns <code>{email, user_id}</code> — eliminates <code>SELECT id FROM users</code></td>
+      </tr>
+      <tr>
+        <td><code>db_or_503()</code> duplicated in 4 router files</td>
+        <td><span class="tag tag-yellow">Medium</span></td>
+        <td><code>routers/{saves,scores,models,admin}.py</code></td>
+        <td>Consolidated into single <code>get_db()</code> in <code>database.py</code></td>
+      </tr>
+      <tr>
+        <td>3D Visualizer "loading forever" — wrapper lacked importmap and type="module"</td>
+        <td><span class="tag tag-red">Critical</span></td>
+        <td><code>projects_display.py</code></td>
+        <td>Added <code>"module"</code> + <code>"importmap"</code> fields to project.json, wrapper generates importmap block dynamically</td>
+      </tr>
+      <tr>
+        <td>3D Visualizer main.js expected HTML elements that didn't exist in wrapper</td>
+        <td><span class="tag tag-red">Critical</span></td>
+        <td><code>projects/3d-viz/main.js</code></td>
+        <td>Rewritten to create all DOM elements dynamically (controls, container, saves bar) inside <code>#project-root</code></td>
+      </tr>
+      <tr>
+        <td>Project wrapper page too short — didn't fill viewport</td>
+        <td><span class="tag tag-yellow">Medium</span></td>
+        <td><code>projects_display.py</code></td>
+        <td>Added <code>flex: 1</code> to <code>.page-section</code> and <code>.project-root</code> for full-height layout</td>
+      </tr>
+      <tr>
+        <td>Projects listing page too small — didn't fill viewport height</td>
+        <td><span class="tag tag-yellow">Medium</span></td>
+        <td><code>projects_display.py</code></td>
+        <td>Added <code>flex: 1</code> to page-section and project-grid for full-height layout</td>
+      </tr>
+      <tr>
+        <td>Orphaned <code>GenerateRequest</code>/<code>GenerateResponse</code> schemas (dead code)</td>
+        <td><span class="tag tag-blue">Low</span></td>
+        <td><code>schemas/models.py</code></td>
+        <td>Removed — no router uses them</td>
+      </tr>
+      <tr>
+        <td>Dead <code>embedHref</code> field in project registry</td>
+        <td><span class="tag tag-blue">Low</span></td>
+        <td><code>projects.ts</code></td>
+        <td>Removed with file</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ─── IMPROVEMENTS ─── -->
+  <h2>3. Improvements</h2>
+
+  <h3>Architecture</h3>
+  <ul>
+    <li><strong>Clean Architecture layers:</strong> <code>models/</code> (schemas) → <code>services/</code> (business logic) → <code>repositories/</code> (database) → <code>routers/</code> (HTTP)</li>
+    <li><strong>Dependency direction:</strong> Outer layers import inner layers, never the reverse. Routers import services, services import repositories.</li>
+    <li><strong>Thin routers:</strong> 60-70% less code per router. Average router: 15 lines vs 45 lines before.</li>
+    <li><strong>Dynamic project system:</strong> No build step to add a project. Create a folder → it appears.</li>
+  </ul>
+
+  <h3>Security</h3>
+  <ul>
+    <li><strong><code>.env</code> gitignored:</strong> No more tracked secrets in the repository</li>
+    <li><strong><code>config/.env.example</code></strong> committed as a template (all values empty)</li>
+    <li><strong>Rate limiting:</strong> Built-in per-IP rate limiter (60 req/min)</li>
+    <li><strong>Global error handler:</strong> Catches unhandled exceptions, returns consistent JSON</li>
+  </ul>
+
+  <h3>Developer Experience</h3>
+  <ul>
+    <li><strong>Single <code>generated/</code> folder:</strong> All build artifacts, cache, and temp files in one place. Clean <code>git status</code>.</li>
+    <li><strong>Platform SDK:</strong> <code>window.Platform</code> — 40 lines, zero dependencies, works with any project</li>
+    <li><strong>Auto-discovery API:</strong> <code>GET /api/platform/projects</code> returns all discovered projects</li>
+    <li><strong>Dynamic wrapper pages:</strong> Backend generates the project page with chrome + SDK on-the-fly</li>
+    <li><strong>Standalone project HTML:</strong> Every project works when opened directly in a browser</li>
+    <li><strong>ES Module support:</strong> <code>project.json</code> supports <code>"module": true</code> and <code>"importmap"</code> for Three.js and other module-based projects</li>
+    <li><strong>Full-height pages:</strong> Both listing and wrapper pages use <code>flex: 1</code> to fill the viewport</li>
+    <li><strong>SDK auto-injected:</strong> The wrapper page adds <code>platform/sdk.js</code> automatically — projects don't need to include it</li>
+    <li><strong>Docs at <code>/docs/</code>:</strong> Documentation and migration report moved to root <code>docs/</code> folder, served at <code>/docs/</code> and <code>/docs/report-v2.html</code></li>
+  </ul>
+
+  <h3>Performance</h3>
+  <ul>
+    <li><strong>Eliminated N+1 queries:</strong> JWT now contains <code>user_id</code>, removing subquery on every authenticated request</li>
+    <li><strong>Dead code removed:</strong> Orphaned schemas, unused imports, stale comments</li>
+    <li><strong>Project pages compiled to static:</strong> Frontend pages (home, about) are pre-built HTML</li>
+  </ul>
+
+  <!-- ─── BEFORE / AFTER ─── -->
+  <h2>4. File Count Comparison</h2>
+  <table>
+    <thead><tr><th>Category</th><th>Before</th><th>After</th><th>Delta</th></tr></thead>
+    <tbody>
+      <tr><td>Python source</td><td>14</td><td>16</td><td><span class="tag tag-green">+2</span></td></tr>
+      <tr><td>Astro pages</td><td>7</td><td>3</td><td><span class="tag tag-green">-4</span></td></tr>
+      <tr><td>Frontend JS</td><td>4</td><td>2</td><td><span class="tag tag-green">-2</span></td></tr>
+      <tr><td>CSS</td><td>1</td><td>1</td><td>0</td></tr>
+      <tr><td>Static HTML</td><td>3</td><td>4</td><td><span class="tag tag-green">+1</span></td></tr>
+      <tr><td>Config files</td><td>5</td><td>6</td><td><span class="tag tag-green">+1</span></td></tr>
+      <tr><td>Project files</td><td>0</td><td>8</td><td><span class="tag tag-green">+8</span></td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>34</strong></td><td><strong>40</strong></td><td><span class="tag tag-green">+6</span></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.85rem; color:var(--text-muted);">Note: ~2,650 lines deleted, ~1,200 lines added. Net code footprint reduced while adding new capabilities (SDK, auto-discovery, dynamic wrapper).</p>
+
+  <h2>5. How the New Project System Works</h2>
+  <pre><code>projects/hello-world/
+├── project.json      ← Metadata: title, description, icon, category
+├── index.html        ← Standalone HTML (works if opened directly)
+└── main.js           ← Game logic (loaded by platform wrapper)
+
+For ES module projects (Three.js), project.json can also include:
+├── "module": true    ← Tells wrapper to use type="module"
+└── "importmap": {...} ← Adds importmap for CDN module resolution</code></pre>
+
+  <p>When you visit <code>/projects/hello-world/</code>:</p>
+  <ol>
+    <li>The backend's <code>projects_display.py</code> router matches the URL</li>
+    <li>It reads <code>projects/hello-world/project.json</code> for metadata</li>
+    <li>It generates an HTML page with: header + project div + SDK + nav strip + footer + <code>main.js</code></li>
+    <li>The project's <code>main.js</code> runs inside the platform, with <code>window.Platform</code> available for API access</li>
+  </ol>
+
+  <p>The listing page at <code>/projects/</code> fetches from <code>/api/platform/projects</code> at runtime, so it always reflects the current set of project folders.</p>
+
+  <div style="margin-top:48px; padding-top:24px; border-top:1px solid var(--border); text-align:center; color:var(--text-muted); font-size:0.85rem;">
+    Report generated for Oktomatzo Host v2.0 migration — May 2026
+  </div>
+</body>
+</html>

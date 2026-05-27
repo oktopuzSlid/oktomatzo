@@ -1,0 +1,7 @@
+{
+  "slug": "hello-world",
+  "title": "Hello World",
+  "description": "Persistent counter demo — test the platform's save/load system.",
+  "category": "interactive",
+  "icon": "smile"
+}

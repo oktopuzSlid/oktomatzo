@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "dev:all": "concurrently \"astro dev\" \"cd backend && .venv\\Scripts\\uvicorn app.main:app --reload --port 8001\"",
-    "build": "astro build",
-    "preview": "astro preview"
+    "dev": "cd backend && .venv\\Scripts\\uvicorn src.main:app --reload --port 8001",
+    "dev:frontend": "cd frontend && npx astro dev",
+    "dev:all": "concurrently \"cd frontend && npx astro dev\" \"cd backend && .venv\\Scripts\\uvicorn src.main:app --reload --port 8001\"",
+    "build": "cd frontend && npx astro build",
+    "preview": "cd frontend && npx astro preview"
   },
   "dependencies": {
     "astro": "^5"

@@ -1,11 +1,28 @@
 node_modules/
-dist/
-.astro/
+frontend/node_modules/
 *.tsbuildinfo
-backend/.venv/
-backend/database.db
-backend/__pycache__/
-backend/app/__pycache__/
-backend/app/routers/__pycache__/
-backend/app/schemas/__pycache__/
 
+# Virtual environments
+backend/.venv/
+generated/backend/venv/
+
+# Databases
+*.db
+generated/backend/db/
+
+# Python bytecode (redirected via PYTHONPYCACHEPREFIX)
+__pycache__/
+*.pyc
+
+# All build/cache artifacts in one folder
+generated/
+
+# Environment files
+.env
+backend/.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

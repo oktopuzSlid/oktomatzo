@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Oktomatzo Host</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .admin-layout{display:flex;min-height:calc(100vh - 60px)}
+    .admin-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);padding:24px;background:var(--bg-surface)}
+    .admin-sidebar a{display:block;padding:8px 12px;border-radius:6px;color:var(--text-muted);font-size:.85rem;margin-bottom:4px}
+    .admin-sidebar a:hover{color:var(--text);background:var(--bg-card)}
+    .admin-sidebar a.active{color:var(--accent);background:var(--accent-subtle)}
+    .admin-main{flex:1;padding:32px 40px;max-width:900px}
+    .admin-main h1{font-size:1.5rem;font-weight:700;margin-bottom:4px}
+    .admin-main .sub{color:var(--text-muted);font-size:.85rem;margin-bottom:24px}
+    .status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+    .status-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+    .status-card .num{font-size:2rem;font-weight:700;color:var(--accent)}
+    .status-card .label{font-size:.8rem;color:var(--text-muted);margin-top:4px}
+  </style>
+</head>
+<body style="background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" style="font-size:1.05rem;font-weight:600;letter-spacing:-.02em;">Oktomatzo<span class="logo-accent" style="color:var(--accent);">Host</span></a>
+      <nav class="nav-links" style="display:flex;gap:2px;">
+        <a href="/admin/" class="nav-link" style="font-size:.82rem;font-weight:500;color:var(--accent);padding:7px 14px;border-radius:6px;background:var(--accent-subtle);">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a href="#" class="active">Dashboard</a>
+      <a href="#" onclick="loadUsers()">Users</a>
+      <a href="/">Back to Site</a>
+    </aside>
+    <main class="admin-main">
+      <h1>Dashboard</h1>
+      <p class="sub" id="status-sub">Checking server connection...</p>
+
+      <div class="status-grid" id="status-grid">
+        <div class="status-card"><div class="num">—</div><div class="label">Users</div></div>
+        <div class="status-card"><div class="num">—</div><div class="label">Projects</div></div>
+        <div class="status-card"><div class="num" id="db-status">—</div><div class="label">Database</div></div>
+      </div>
+
+      <div id="db-notice" style="display:none;"></div>
+
+      <div id="users-section" style="display:none;">
+        <h1 style="margin-top:32px;">Users</h1>
+        <p class="sub">Registered accounts</p>
+        <table class="admin-table" id="users-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Created</th></tr></thead>
+          <tbody id="users-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  async function apiFetch(path) {
+    var token = localStorage.getItem('token')
+    if (!token) {
+      document.getElementById('status-sub').textContent = 'Not logged in. Go to /login/ first.'
+      return null
+    }
+    var res = await fetch(path, { headers: { 'Authorization': 'Bearer ' + token } })
+    if (!res.ok) {
+      if (res.status === 401) {
+        document.getElementById('status-sub').textContent = 'Session expired. Re-login at /login/.'
+      }
+      return null
+    }
+    return res.json()
+  }
+
+  async function loadStatus() {
+    var data = await apiFetch('/api/admin/db-status')
+    if (!data) return
+    var grid = document.getElementById('status-grid')
+    grid.children[0].querySelector('.num').textContent = data.users
+    grid.children[1].querySelector('.num').textContent = data.projects
+    grid.children[2].querySelector('.num').textContent = data.database === 'PostgreSQL' ? 'PostgreSQL' : data.database
+
+    var notice = document.getElementById('db-notice')
+    if (data.database !== 'PostgreSQL') {
+      notice.style.display = 'block'
+      notice.innerHTML =
+        '<div class="notice">' +
+        '<strong>Database may not persist across restarts.</strong><br>' +
+        'Current database: <code>' + data.database + '</code>. ' +
+        'For production, use PostgreSQL (Supabase free tier).' +
+        '</div>'
+    } else {
+      notice.style.display = 'none'
+    }
+  }
+
+  window.loadUsers = async function () {
+    var data = await apiFetch('/api/admin/users')
+    if (!data) return
+    document.getElementById('users-section').style.display = 'block'
+    var tbody = document.getElementById('users-body')
+    tbody.innerHTML = ''
+    data.forEach(function (u) {
+      var tr = document.createElement('tr')
+      tr.innerHTML = '<td>' + u.id + '</td><td>' + u.name + '</td><td>' + u.email + '</td><td>' + (u.created_at || '—') + '</td>'
+      tbody.appendChild(tr)
+    })
+  }
+
+  loadStatus()
+  </script>
+</body>
+</html>
