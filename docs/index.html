@@ -112,9 +112,20 @@
       <a href="#api-models">Models</a>
     </div>
     <div class="section">
+      <div class="section-title">Architecture</div>
+      <a href="#wrapper-architecture">Wrapper System</a>
+      <a href="#technologies">Technologies</a>
+    </div>
+    <div class="section">
+      <div class="section-title">SDK Deep Dive</div>
+      <a href="#sdk-deep-dive">How It Works</a>
+      <a href="#sdk-deep-dive">Internal Structure</a>
+    </div>
+    <div class="section">
       <div class="section-title">Reference</div>
       <a href="#auto-discovery">Auto-Discovery</a>
       <a href="#how-it-runs">How It Runs</a>
+      <a href="#legacy">Legacy Docs</a>
     </div>
   </nav>
 
@@ -395,6 +406,8 @@ scripts\dev.ps1
     <ul>
       <li><strong>This page:</strong> <code>docs/index.html</code> (served at <code>/docs/</code>)</li>
       <li><strong>Migration report:</strong> <code>docs/report-v2.html</code> (served at <code>/docs/report-v2.html</code>)</li>
+      <li><strong>Legacy v1.0 docs:</strong> <code>docs/v1.html</code> (served at <code>/docs/v1.html</code>)</li>
+      <li><strong>Legacy v1.0 report:</strong> <code>docs/report-v1.html</code> (served at <code>/docs/report-v1.html</code>)</li>
     </ul>
 
     <h3>Production (Render)</h3>
@@ -409,6 +422,126 @@ Environment Variables (set in Render dashboard):
   SECRET_KEY         # Random token (python -c "import secrets; print(secrets.token_hex(32))")
   SUPABASE_URL       # (optional) For model file uploads
   SUPABASE_SERVICE_KEY # (optional) For model file uploads</code></pre>
+    <!-- ─── WRAPPER ARCHITECTURE ─── -->
+    <h2 id="wrapper-architecture">Wrapper Architecture (How Projects Load)</h2>
+    <p>When you visit <code>/projects/my-game/</code>, the backend does not serve a static file. Instead, it <strong>generates the HTML dynamically</strong> at request time. Here's exactly what happens:</p>
+    <ol>
+      <li><strong>Route match:</strong> FastAPI's <code>projects_display.py</code> catches <code>/projects/{slug}/</code></li>
+      <li><strong>Validate:</strong> Checks that <code>projects/{slug}/</code> exists on disk</li>
+      <li><strong>Read metadata:</strong> Loads <code>project.json</code> for title, description, icon, and module config</li>
+      <li><strong>Generate HTML:</strong> Produces a complete HTML page containing:
+        <ul>
+          <li>The platform header (logo + navigation linking to Projects, About, Docs)</li>
+          <li>A <code>&lt;div id="project-root"&gt;</code> where the project mounts</li>
+          <li>The <code>/platform/sdk.js</code> script (auto-injected)</li>
+          <li>A nav strip populated by <code>/api/platform/projects</code></li>
+          <li>The project's <code>main.js</code> loaded at the bottom</li>
+          <li>The platform footer with health indicator</li>
+        </ul>
+      </li>
+      <li><strong>Module support:</strong> If <code>project.json</code> has <code>"module": true</code>, the wrapper adds <code>&lt;script type="importmap"&gt;</code> and loads <code>main.js</code> with <code>type="module"</code></li>
+    </ol>
+    <p>The wrapper lives entirely in <code>backend/src/routers/projects_display.py</code> (235 lines). It uses Python f-strings for template generation — no Jinja2, no external dependencies.</p>
+    <div class="tip"><strong>Key insight:</strong> The wrapper never reads the project's <code>index.html</code>. The <code>index.html</code> is only for standalone use when opening the folder directly. For platform use, the wrapper generates everything from scratch, ensuring consistent chrome across all projects.</div>
+
+    <!-- ─── TECHNOLOGIES ─── -->
+    <h2 id="technologies">Technologies Used</h2>
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td>Astro</td><td>5.x</td><td>Static site generation for main pages (home, about, login)</td></tr>
+        <tr><td>Frontend</td><td>TypeScript</td><td>—</td><td>Type safety for shared API client</td></tr>
+        <tr><td>Frontend</td><td>Vanilla JS</td><td>—</td><td>Project logic (no framework lock-in — any project works)</td></tr>
+        <tr><td>Frontend</td><td>Three.js</td><td>0.170</td><td>3D rendering (loaded via CDN importmap, not bundled)</td></tr>
+        <tr><td>Backend</td><td>Python 3</td><td>3.11+</td><td>Runtime language</td></tr>
+        <tr><td>Backend</td><td>FastAPI</td><td>0.115</td><td>REST API framework with automatic OpenAPI docs</td></tr>
+        <tr><td>Backend</td><td>Uvicorn</td><td>0.30</td><td>ASGI server</td></tr>
+        <tr><td>Backend</td><td>psycopg2</td><td>2.9</td><td>PostgreSQL driver</td></tr>
+        <tr><td>Backend</td><td>python-jose</td><td>3.3</td><td>JWT token creation and verification</td></tr>
+        <tr><td>Backend</td><td>passlib + bcrypt</td><td>1.7 / 4.1</td><td>Password hashing</td></tr>
+        <tr><td>Backend</td><td>httpx</td><td>0.27</td><td>HTTP client for Supabase Storage uploads</td></tr>
+        <tr><td>Backend</td><td>python-multipart</td><td>0.0.12</td><td>File upload parsing</td></tr>
+        <tr><td>Backend</td><td>python-dotenv</td><td>1.0</td><td>Load .env files locally</td></tr>
+        <tr><td>Database</td><td>PostgreSQL (Supabase)</td><td>15.x</td><td>Persistent relational database</td></tr>
+        <tr><td>Storage</td><td>Supabase Storage</td><td>—</td><td>3D model file hosting (.glb, .gltf, .obj, .stl)</td></tr>
+        <tr><td>Auth</td><td>bcrypt + JWT</td><td>—</td><td>Password hashing + stateless session tokens</td></tr>
+        <tr><td>Hosting</td><td>Render</td><td>—</td><td>Single Web Service serving both frontend and API</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── SDK DEEP DIVE ─── -->
+    <h2 id="sdk-deep-dive">Platform SDK — How It Works</h2>
+    <p>The SDK is a <strong>38-line IIFE</strong> (Immediately Invoked Function Expression) at <code>platform/sdk.js</code>. It has <strong>no dependencies, no side effects, and no DOM manipulation</strong>. It simply defines <code>window.Platform</code> and exits.</p>
+
+    <h3>Why It Works</h3>
+    <p>The SDK works because of <strong>same-origin sharing</strong>. The project's <code>main.js</code> runs on the same domain as the platform (both served by the same backend). This means:</p>
+    <ul>
+      <li><strong>localStorage is shared.</strong> When the user logs in via the platform, the JWT token is stored in <code>localStorage</code>. The project's <code>main.js</code> can read it directly via <code>window.Platform.auth.getToken()</code></li>
+      <li><strong>Fetch calls are same-origin.</strong> API calls like <code>fetch('/api/scores')</code> work automatically because they're on the same domain — no CORS headers needed</li>
+      <li><strong>No iframes.</strong> The project runs directly on the page, not in an iframe. This means CSS, fonts, and event listeners all share the same context</li>
+    </ul>
+
+    <h3>Internal Structure</h3>
+    <pre><code>window.Platform {
+  auth: {
+    isLoggedIn()  → reads localStorage.getItem('token')
+    getUserName() → reads localStorage.getItem('user_name')
+    getToken()    → returns raw JWT
+    signup()      → POST /api/auth/signup, stores token
+    login()       → POST /api/auth/login, stores token
+    logout()      → removes items from localStorage
+  },
+  saves: {
+    save(slug, label, state) → POST /api/saves
+    load(slug)               → GET /api/saves/{slug}
+    deleteSave(id)           → DELETE /api/saves/{id}
+  },
+  scores: {
+    submit(slug, score, meta) → POST /api/scores
+    leaderboard(slug)         → GET /api/scores/{slug}
+  },
+  models: {
+    upload(slug, file)        → POST /api/models/upload (multipart)
+    list()                    → GET /api/models
+    deleteModel(id)           → DELETE /api/models/{id}
+  }
+}</code></pre>
+
+    <h3>How to Use It in a Project</h3>
+    <p>The SDK is <strong>automatically available</strong> when your project runs through the platform wrapper. Your <code>main.js</code> simply checks if it exists and uses it:</p>
+    <pre><code>// In your project's main.js — no imports needed
+var p = window.Platform
+
+// Auth check
+if (p && p.auth.isLoggedIn()) {
+  console.log('User: ' + p.auth.getUserName())
+
+  // Save game state
+  p.saves.save('my-game', 'level-5', { score: 2500, health: 80 })
+
+  // Submit score
+  p.scores.submit('my-game', 2500, { level: 5 })
+}
+
+// Load leaderboard (public endpoint, no auth needed)
+if (p) {
+  p.scores.leaderboard('my-game').then(function(scores) {
+    scores.forEach(function(s) { console.log(s.name + ': ' + s.score) })
+  })
+}</code></pre>
+    <div class="tip"><strong>The SDK is optional.</strong> If your project doesn't call <code>window.Platform</code>, the object sits unused (~2KB in memory). No errors, no side effects, no performance impact. Projects that don't need auth or data persistence work perfectly without any SDK interaction.</div>
+
+    <h3>When the SDK Is Not Available</h3>
+    <p>If you open the project's <code>index.html</code> directly as a local file (not through the platform), <code>window.Platform</code> may be undefined depending on whether you included the SDK script. The wrapper always injects it, but the standalone HTML does not — so your <code>main.js</code> should always check <code>if (window.Platform)</code> before using it. This is already done in the example above.</p>
+
+    <!-- ─── LEGACY DOCUMENTATION ─── -->
+    <h2 id="legacy">Legacy Documentation</h2>
+    <p>These pages from the original v1.0 release are preserved for historical reference. They describe the old architecture where projects were Astro pages and the backend used a flat structure.</p>
+    <ul>
+      <li><a href="/docs/v1.html">v1.0 Documentation</a> — Original platform documentation (before Clean Architecture restructure)</li>
+      <li><a href="/docs/report-v1.html">v1.0 Release Report</a> — Original v1.0 release notes</li>
+      <li><a href="/docs/report-v2.html">v2.0 Migration Report</a> — Complete restructuring details from v1.0 to v2.0</li>
+    </ul>
   </main>
 </body>
 </html>
