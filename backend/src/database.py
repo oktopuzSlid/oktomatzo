@@ -18,8 +18,14 @@ def _resolve_url():
             parsed = urlparse(url)
             host = parsed.hostname
             if host:
-                ipv4 = socket.getaddrinfo(host, None, socket.AF_INET)[0][4][0]
-                url = url.replace(host, ipv4)
+                try:
+                    ipv4 = socket.getaddrinfo(host, None, socket.AF_INET)[0][4][0]
+                    url = url.replace(host, ipv4)
+                except Exception:
+                    for info in socket.getaddrinfo(host, None):
+                        if info[0] == socket.AF_INET:
+                            url = url.replace(host, info[4][0])
+                            break
         except Exception:
             pass
     _resolved_url = url

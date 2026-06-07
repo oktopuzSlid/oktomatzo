@@ -387,20 +387,44 @@
     <!-- ─── HOW IT RUNS ─── -->
     <h2 id="how-it-runs">How It Runs</h2>
     <h3>How to Run</h3>
-    <p>The project is <strong>backend-driven</strong> — the Python server serves everything (API, frontend pages, project wrappers, docs). No package manager required.</p>
+    <p>The project is <strong>backend-driven</strong> — the Python server serves everything (API, frontend pages, project wrappers, docs). No package manager required for running.</p>
 
-    <h4>🖥️ Run the backend (no npm needed)</h4>
-    <pre><code>cd backend
-.venv\Scripts\uvicorn src.main:app --reload --port 8001
+    <h4>🐧 Linux / macOS</h4>
+    <pre><code># Option A — Launcher script (recommended)
+./scripts/dev.sh              # port 8001
+./scripts/dev.sh 8080         # custom port
 
-# Or use the launcher script:
-scripts\dev.ps1
+# Option B — Direct
+cd backend
+source .venv/bin/activate
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8001
 
 # Then visit: http://localhost:8001/</code></pre>
+
+    <h4>🪟 Windows</h4>
+    <pre><code># Option A — Launcher script (recommended)
+scripts\dev.ps1               # port 8001
+scripts\dev.ps1 8080          # custom port
+
+# Option B — Direct
+cd backend
+.venv\Scripts\uvicorn src.main:app --reload --host 0.0.0.0 --port 8001
+
+# Then visit: http://localhost:8001/</code></pre>
+
     <p>Everything works from one port: home page, projects, 3D visualizer, docs, API, SDK — all of it.</p>
 
-    <h4>🔄 (Optional) Frontend dev server for page editing</h4>
-    <p>If you're editing the Astro pages and need hot-reload, use Node.js from <code>frontend/</code> (requires the frontend dependencies installed first). Keep the backend on port 8001 running for everything else.</p>
+    <h4>🔄 Changing the port</h4>
+    <p>Pass a port number to the launcher script or add <code>--port &lt;number&gt;</code> to the uvicorn command.</p>
+
+    <h4>🖥️ Building the frontend (one-time, for page changes)</h4>
+    <p>Only needed when editing Astro pages (home, about, login):</p>
+    <pre><code># Linux / macOS
+cd frontend && pnpm install && pnpm astro build
+
+# Windows
+cd frontend && pnpm install && pnpm astro build</code></pre>
+    <p>Uses <a href="https://pnpm.io/">pnpm</a> (install with <code>npm install -g pnpm</code> or standalone).</p>
 
     <h3>Documentation Files</h3>
     <ul>
@@ -412,7 +436,7 @@ scripts\dev.ps1
 
     <h3>Production (Render)</h3>
     <pre><code>Build Command:
-  cd frontend && npx astro build && cd ../backend && pip install -r requirements.txt
+  cd frontend && pnpm install && pnpm astro build && cd ../backend && pip install -r requirements.txt
 
 Start Command:
   cd backend && uvicorn src.main:app --host 0.0.0.0 --port $PORT

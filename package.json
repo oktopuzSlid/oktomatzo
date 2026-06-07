@@ -4,16 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cd backend && .venv\\Scripts\\uvicorn src.main:app --reload --port 8001",
-    "dev:frontend": "cd frontend && npx astro dev",
-    "dev:all": "concurrently \"cd frontend && npx astro dev\" \"cd backend && .venv\\Scripts\\uvicorn src.main:app --reload --port 8001\"",
-    "build": "cd frontend && npx astro build",
-    "preview": "cd frontend && npx astro preview"
-  },
-  "dependencies": {
-    "astro": "^5"
-  },
-  "devDependencies": {
-    "concurrently": "^9.0.0"
+    "dev": "echo 'Use: scripts/dev.ps1 (Windows) or scripts/dev.sh (Linux)'",
+    "build": "cd frontend && pnpm astro build",
+    "dev:frontend": "cd frontend && pnpm astro dev"
   }
 }

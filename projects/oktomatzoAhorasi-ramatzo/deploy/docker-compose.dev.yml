@@ -1,0 +1,119 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../proxy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ../docs:/usr/share/docs:ro
+      - caddy_data:/data
+    depends_on:
+      - backend
+      - shell
+      - app-dashboard
+      - app-viewer-3d
+      - app-mundo-3d
+      - app-combate-3d
+      - game-server
+      - oktomatzo2-app
+      - test-uno
+      - test-dos
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    volumes:
+      - backend_data:/app/data
+    environment:
+      - DB_PATH=/app/data/plataforma.db
+      - JWT_SECRET=dev-secret-change-in-production
+      - PORT=8080
+
+  shell:
+    build:
+      context: ..
+      dockerfile: shell/Dockerfile
+    ports:
+      - "8086:80"
+
+  app-dashboard:
+    build:
+      context: ..
+      dockerfile: apps/app-a-dashboard/Dockerfile
+    ports:
+      - "8082:80"
+
+  app-viewer-3d:
+    build:
+      context: ..
+      dockerfile: apps/app-b-viewer-3d/Dockerfile
+    ports:
+      - "8083:80"
+
+  app-mundo-3d:
+    build:
+      context: ..
+      dockerfile: apps/app-mundo-3d/Dockerfile
+      args:
+        VITE_CESIUM_ION_TOKEN: ${VITE_CESIUM_ION_TOKEN:-}
+        VITE_MODEL_CAR_URL: ${VITE_MODEL_CAR_URL:-}
+        VITE_MODEL_PLANE_URL: ${VITE_MODEL_PLANE_URL:-}
+        VITE_MODEL_BOAT_URL: ${VITE_MODEL_BOAT_URL:-}
+    ports:
+      - "8087:80"
+
+  app-combate-3d:
+    build:
+      context: ..
+      dockerfile: apps/app-combate-3d/Dockerfile
+    ports:
+      - "8088:80"
+
+  game-server:
+    build:
+      context: ../services/game-server
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8091:8080"
+
+  oktomatzo2-api:
+    build:
+      context: ../apps/oktomatzo2/tattoo-preview/backend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8089:8000"
+    environment:
+      - MAX_UPLOAD_MB=10
+
+  oktomatzo2-app:
+    build:
+      context: ../apps/oktomatzo2/tattoo-preview/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8090:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost/oktomatzo2-api
+      - NEXT_TELEMETRY_DISABLED=1
+    depends_on:
+      - oktomatzo2-api
+
+  test-uno:
+    build:
+      context: ..
+      dockerfile: apps/test-uno/Dockerfile
+    ports:
+      - "8084:80"
+
+  test-dos:
+    build:
+      context: ..
+      dockerfile: apps/test-dos/Dockerfile
+    ports:
+      - "8085:80"
+
+volumes:
+  caddy_data:
+  backend_data:

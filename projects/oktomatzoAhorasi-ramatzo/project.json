@@ -1,0 +1,15 @@
+{
+  "slug": "GameZone",
+  "entry": "index.html",
+  "title": "GameZone",
+  "description": "GameZone is a collection of interactive games and visualizations built with Three.js. Explore a variety of 3D experiences, from classic games to innovative visualizations, all designed to showcase the power of Three.js in creating immersive web-based content.",
+  "category": "github repository",
+  "icon": "cube",
+  "module": true,
+  "importmap": {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/"
+    }
+  }
+}
