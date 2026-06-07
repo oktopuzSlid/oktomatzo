@@ -1,5 +1,6 @@
 {
   "slug": "3d-viz",
+  "entry": "index.html",
   "title": "3D Visualizer",
   "description": "Interactive geometric scene with Three.js — orbit, zoom, recolor, upload models.",
   "category": "threejs",
@@ -8,7 +9,8 @@
   "importmap": {
     "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.170/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/"
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/",
+      "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19.2/dist/lil-gui.esm.js"
     }
   }
 }

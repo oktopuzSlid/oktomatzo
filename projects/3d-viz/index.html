@@ -1,40 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Visualizer — Oktomatzo Host</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Model Carousel</title>
   <style>
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    :root{--bg:#000;--bg-surface:#060608;--bg-elevated:#0d0d12;--bg-card:rgba(255,255,255,0.025);--bg-hover:rgba(255,255,255,0.05);--text:#eee;--text-secondary:#8a8a9a;--text-muted:#5a5a6a;--accent:#3b82f6;--accent-hover:#60a5fa;--accent-subtle:rgba(59,130,246,0.08);--success:#10b981;--danger:#ef4444;--border:rgba(255,255,255,0.06);--border-active:rgba(59,130,246,0.3);--radius:10px;--radius-lg:16px;--shadow:0 2px 20px rgba(0,0,0,.5);--font:'Space Grotesk','Inter',-apple-system,sans-serif}
-    html{-webkit-font-smoothing:antialiased}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.6}
-    a{color:inherit;text-decoration:none}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 26px;border-radius:8px;font-size:.88rem;font-weight:500;font-family:var(--font);transition:all .2s;cursor:pointer;border:1px solid transparent;outline:none;white-space:nowrap}
-    .btn:active{transform:scale(.97)}
-    .btn-primary{background:var(--accent);color:#fff}
-    .btn-primary:hover{background:var(--accent-hover);color:#fff;box-shadow:0 0 30px rgba(59,130,246,.2)}
-    .btn-outline{background:transparent;color:var(--text-secondary);border-color:var(--border)}
-    .btn-outline:hover{border-color:rgba(255,255,255,.15);color:var(--text);background:var(--bg-card)}
-    .standalone-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px}
-    .project-root{width:100%;max-width:1000px}
+    /* ── Reset & base ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      overflow: hidden;
+      background: #0a0a0f;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #eee;
+    }
+
+    /* ── Three.js canvas container (fullscreen) ── */
+    #canvas-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 1;
+    }
+
+    /* ── Overlay UI (sits above the canvas) ── */
+    #ui-overlay {
+      position: fixed;
+      z-index: 10;
+      pointer-events: none;       /* allow clicks to pass through to canvas */
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    #ui-overlay > * {
+      pointer-events: auto;       /* re-enable clicks on interactive children */
+    }
+
+    /* Model name badge – centered at top */
+    #model-name {
+      position: absolute;
+      top: 24px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 8px 22px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      color: #ccc;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* Status message – below model name */
+    #status-msg {
+      position: absolute;
+      top: 68px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.45);
+      user-select: none;
+      white-space: nowrap;
+      transition: opacity 0.3s;
+    }
+
+    /* Navigation buttons – bottom center */
+    #nav-buttons {
+      position: absolute;
+      bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+
+    .ui-btn {
+      padding: 10px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: rgba(10, 10, 15, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #ddd;
+      font-size: 0.88rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+      user-select: none;
+    }
+    .ui-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    .ui-btn:active {
+      transform: scale(0.96);
+    }
+    .ui-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Upload button – distinct accent */
+    .ui-btn-accent {
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #93bbfc;
+    }
+    .ui-btn-accent:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #b3d4ff;
+    }
+
+    /* Reset pose button – bottom right area */
+    #btn-reset-pose {
+      position: absolute;
+      bottom: 36px; right: 24px;
+    }
+
+    /* Upload button – bottom left area */
+    #btn-upload {
+      position: absolute;
+      bottom: 36px; left: 24px;
+    }
   </style>
 </head>
 <body>
-  <div class="standalone-wrap">
-    <div id="project-root" class="project-root">
-      <p style="color:var(--text-muted);">Loading...</p>
+
+  <!-- Fullscreen Three.js canvas is appended here by SceneManager -->
+  <div id="canvas-container"></div>
+
+  <!-- Hidden file input for model upload -->
+  <input type="file" id="file-input" accept=".glb,.gltf"
+         style="display:none" />
+
+  <!-- Overlay UI on top of the canvas -->
+  <div id="ui-overlay">
+    <!-- Top: model name + status -->
+    <div id="model-name">Loading…</div>
+    <div id="status-msg"></div>
+
+    <!-- Bottom centre: navigation -->
+    <div id="nav-buttons">
+      <button class="ui-btn" id="btn-prev">◀  Prev</button>
+      <button class="ui-btn" id="btn-next">Next  ▶</button>
     </div>
+
+    <!-- Bottom left: upload -->
+    <button class="ui-btn ui-btn-accent" id="btn-upload">⬆  Upload</button>
+
+    <!-- Bottom right: pose reset -->
+    <button class="ui-btn" id="btn-reset-pose">↺  Reset Pose</button>
   </div>
+
+  <!-- ── Import map: resolve bare module names to CDN URIs ── -->
   <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.170/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170/examples/jsm/"
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+      "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19.2/dist/lil-gui.esm.js"
     }
   }
   </script>
-  <script src="main.js" type="module"></script>
+
+  <!-- Application entry point -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>
